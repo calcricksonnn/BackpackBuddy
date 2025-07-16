@@ -11,38 +11,95 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 
 export default function Explore({ user }) {
-  const [users, setUsers] = useState([]);
+  const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchProfiles = async () => {
+  const db = firebase.firestore();
+
+  // Step 1: Get user's stops
+  const fetchUserStops = async () => {
+    const snapshot = await db
+      .collection('routes')
+      .doc(user.uid)
+      .collection('stops')
+      .orderBy('createdAt', 'desc')
+      .limit(10)
+      .get();
+
+    return snapshot.docs.map((doc) => doc.data().location);
+  };
+
+  // Step 2: Find other users with matching stops
+  const fetchMatches = async () => {
     try {
-      const snapshot = await firebase
-        .firestore()
-        .collection('profiles')
-        .where(firebase.firestore.FieldPath.documentId(), '!=', user.uid)
+      const userStops = await fetchUserStops();
+
+      if (userStops.length === 0) {
+        setMatches([]);
+        setLoading(false);
+        return;
+      }
+
+      // Query all profiles except current user who have route stops in userStops
+      // Firestore doesn't support joins, so we do a two-step process:
+      // 1) Find user IDs who have matching stops
+      // 2) Fetch those profiles
+
+      // Step 2a: Find matching user IDs
+      const stopsQuery = await db
+        .collectionGroup('stops')
+        .where('location', 'in', userStops)
         .get();
 
-      const result = snapshot.docs.map((doc) => ({
+      const userIdSet = new Set();
+      stopsQuery.forEach((doc) => {
+        if (doc.ref.parent.parent.id !== user.uid) {
+          userIdSet.add(doc.ref.parent.parent.id);
+        }
+      });
+
+      if (userIdSet.size === 0) {
+        setMatches([]);
+        setLoading(false);
+        return;
+      }
+
+      // Step 2b: Fetch profiles of matching users
+      const profilesSnapshot = await db
+        .collection('profiles')
+        .where(firebase.firestore.FieldPath.documentId(), 'in', Array.from(userIdSet))
+        .get();
+
+      const matchedProfiles = profilesSnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
 
-      setUsers(result);
+      setMatches(matchedProfiles);
     } catch (error) {
-      console.error('Error fetching profiles:', error);
+      console.error('Error fetching matches:', error);
+      setMatches([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchProfiles();
+    fetchMatches();
   }, []);
 
   if (loading) {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color="#007BFF" />
+      </View>
+    );
+  }
+
+  if (matches.length === 0) {
+    return (
+      <View style={styles.center}>
+        <Text>No matching travelers found on your route yet.</Text>
       </View>
     );
   }
@@ -56,15 +113,12 @@ export default function Explore({ user }) {
 
   return (
     <View style={styles.container}>
-      {users.length === 0 ? (
-        <Text style={styles.empty}>No travelers found</Text>
-      ) : (
-        <FlatList
-          data={users}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-        />
-      )}
+      <Text style={styles.title}>Travelers on your route:</Text>
+      <FlatList
+        data={matches}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+      />
     </View>
   );
 }
@@ -72,6 +126,7 @@ export default function Explore({ user }) {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 10 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 10, textAlign: 'center' },
   card: {
     backgroundColor: '#fff',
     padding: 16,
@@ -84,5 +139,4 @@ const styles = StyleSheet.create({
   },
   name: { fontSize: 18, fontWeight: 'bold', marginBottom: 4 },
   email: { fontSize: 14, color: '#555' },
-  empty: { textAlign: 'center', marginTop: 30, fontSize: 16 },
 });
