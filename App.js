@@ -12,25 +12,23 @@ import RoutePlanner from './RoutePlanner';
 import Notifications from './Notifications';
 import Auth from './Auth';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDJX3cxW59Xo-wX0GeSBWm1jzMgh5PzCmw",
-  authDomain: "backpackbuddy-24763.firebaseapp.com",
-  projectId: "backpackbuddy-24763",
-  storageBucket: "backpackbuddy-24763.firebasestorage.app",
-  messagingSenderId: "912941149924",
-  appId: "1:912941149924:web:73e255bad0a6fc0ecdc6f1",
-};
-
+// ✅ Firebase configuration (declared only once)
 if (!firebase.apps.length) {
+  const firebaseConfig = {
+    apiKey: "AIzaSyDJX3cxW59Xo-wX0GeSBWm1jzMgh5PzCmw",
+    authDomain: "backpackbuddy-24763.firebaseapp.com",
+    projectId: "backpackbuddy-24763",
+    storageBucket: "backpackbuddy-24763.appspot.com", // ✅ fixed typo: use .appspot.com for Firestore
+    messagingSenderId: "912941149924",
+    appId: "1:912941149924:web:73e255bad0a6fc0ecdc6f1",
+  };
   firebase.initializeApp(firebaseConfig);
 }
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [profileComplete, setProfileComplete] = useState(false);
-  const [screen, setScreen] = useState('loading'); // 'login', 'profile', 'meetups', 'chat', 'explore', 'routeplanner', 'notifications'
-  
-  // New state for the user we are chatting with
+  const [screen, setScreen] = useState('loading');
   const [chatWithUser, setChatWithUser] = useState(null);
 
   useEffect(() => {
@@ -52,13 +50,11 @@ export default function App() {
     firebase.auth().signOut();
   };
 
-  // Open chat with selected user
   const openChatWith = (userToChat) => {
     setChatWithUser(userToChat);
     setScreen('chat');
   };
 
-  // Go back from chat to meetups screen
   const goBackFromChat = () => {
     setChatWithUser(null);
     setScreen('meetups');
@@ -76,16 +72,13 @@ export default function App() {
     return <Auth />;
   }
 
-  if (!user) {
-    return null; // Safety fallback
-  }
+  if (!user) return null;
 
   if (!profileComplete && screen !== 'profile') {
     setScreen('profile');
     return null;
   }
 
-  // Navigation bar to switch between main features
   const NavBar = () => (
     <View style={styles.navBar}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -100,23 +93,19 @@ export default function App() {
     </View>
   );
 
-  // Render screens based on current state
   const renderScreen = () => {
     switch (screen) {
       case 'profile':
         return <Profile user={user} onSaveSuccess={() => setProfileComplete(true)} />;
       case 'meetups':
-        // Pass openChatWith callback so Meetups can open chat with a user
         return <Meetups user={user} onStartChat={openChatWith} />;
       case 'chat':
         if (!chatWithUser) {
           setScreen('meetups');
           return null;
         }
-        // Pass chatWithUser and goBackFromChat to Chat component
         return <Chat user={user} chatWith={chatWithUser} goBack={goBackFromChat} />;
       case 'explore':
-        // Pass openChatWith callback so Explore can open chat with a user
         return <Explore user={user} onStartChat={openChatWith} />;
       case 'routeplanner':
         return <RoutePlanner user={user} />;
