@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
+import Profile from './Profile';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDJX3cxW59Xo-wX0GeSBWm1jzMgh5PzCmw",
@@ -18,87 +19,52 @@ if (!firebase.apps.length) {
 
 export default function App() {
   const [user, setUser] = useState(null);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [profileComplete, setProfileComplete] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = firebase.auth().onAuthStateChanged(setUser);
+    const unsubscribe = firebase.auth().onAuthStateChanged(async (u) => {
+      setUser(u);
+      if (u) {
+        const doc = await firebase.firestore().collection('profiles').doc(u.uid).get();
+        setProfileComplete(doc.exists);
+      } else {
+        setProfileComplete(false);
+      }
+    });
     return unsubscribe;
   }, []);
-
-  const handleRegister = async () => {
-    try {
-      await firebase.auth().createUserWithEmailAndPassword(email, password);
-      Alert.alert("Success", "Account created!");
-    } catch (error) {
-      Alert.alert("Registration Error", error.message);
-    }
-  };
-
-  const handleLogin = async () => {
-    try {
-      await firebase.auth().signInWithEmailAndPassword(email, password);
-    } catch (error) {
-      Alert.alert("Login Error", error.message);
-    }
-  };
 
   const handleLogout = () => {
     firebase.auth().signOut();
   };
 
   if (!user) {
+    // Show your existing login/register UI here
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>BackpackBuddy</Text>
-        <TextInput
-          placeholder="Email"
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-        />
-        <TextInput
-          placeholder="Password"
-          style={styles.input}
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
-        <Button title="Login" onPress={handleLogin} />
-        <View style={{ height: 10 }} />
-        <Button title="Register" onPress={handleRegister} />
+        <Text>Please login first (add your login/register code here)</Text>
       </View>
+    );
+  }
+
+  if (!profileComplete) {
+    return (
+      <Profile
+        user={user}
+        onSaveSuccess={() => setProfileComplete(true)}
+      />
     );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome {user.email} 👋</Text>
+      <Text style={{ fontSize: 20 }}>Welcome {user.email}!</Text>
       <Button title="Logout" onPress={handleLogout} />
+      {/* Add your main app UI here */}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 120,
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    backgroundColor: '#F5F5F5',
-  },
-  title: {
-    fontSize: 28,
-    marginBottom: 30,
-    fontWeight: 'bold',
-  },
-  input: {
-    width: '100%',
-    padding: 12,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#999',
-    borderRadius: 8,
-    backgroundColor: '#FFF',
-  },
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
 });
