@@ -11,6 +11,7 @@ import Chat from './Chat';
 import Explore from './Explore';
 import RoutePlanner from './RoutePlanner';
 import Notifications from './Notifications';
+import Auth from './Auth';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDJX3cxW59Xo-wX0GeSBWm1jzMgh5PzCmw",
@@ -58,12 +59,8 @@ export default function App() {
   }
 
   if (screen === 'login') {
-    return (
-      <View style={styles.container}>
-        <Text>Please login first (add your login/register UI here)</Text>
-      </View>
-    );
-  }
+  return <Auth />;
+}
 
   if (!user) {
     return null; // Safety fallback
