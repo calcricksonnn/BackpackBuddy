@@ -9,6 +9,7 @@ import {
   Button,
   Modal,
   ScrollView,
+  Image,
 } from 'react-native';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
@@ -44,9 +45,10 @@ export default function Explore({ user, onStartChat }) {
         return;
       }
 
+      // Firestore 'in' queries limit is 10 items max, keep that in mind.
       const stopsQuery = await db
         .collectionGroup('stops')
-        .where('location', 'in', userStops)
+        .where('location', 'in', userStops.slice(0, 10))
         .get();
 
       const userIdSet = new Set();
@@ -124,20 +126,34 @@ export default function Explore({ user, onStartChat }) {
   }
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.card} onPress={() => openUserModal(item)}>
-      <Text style={styles.name}>{item.name || 'Unnamed Traveler'}</Text>
-      <Text style={styles.email}>{item.email}</Text>
-      <Button title="Chat" onPress={() => onStartChat(item)} />
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => openUserModal(item)}
+      activeOpacity={0.8}
+    >
+      {/* Optional profile picture */}
+      {item.photoURL ? (
+        <Image source={{ uri: item.photoURL }} style={styles.avatar} />
+      ) : (
+        <View style={[styles.avatar, styles.avatarPlaceholder]}>
+          <Text style={styles.avatarPlaceholderText}>
+            {item.name ? item.name[0] : '?'}
+          </Text>
+        </View>
+      )}
+
+      <View style={styles.info}>
+        <Text style={styles.name}>{item.name || 'Unnamed Traveler'}</Text>
+        <Text style={styles.email}>{item.email}</Text>
+        {/* You could add location or travel dates here if you want */}
+        <Button title="Chat" onPress={() => onStartChat(item)} />
+      </View>
     </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={matches}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-      />
+      <FlatList data={matches} keyExtractor={(item) => item.id} renderItem={renderItem} />
 
       {/* Modal for user profile + route */}
       <Modal visible={!!selectedUser} animationType="slide" onRequestClose={closeUserModal}>
@@ -171,6 +187,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 10 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   card: {
+    flexDirection: 'row',
     backgroundColor: '#fff',
     padding: 16,
     marginBottom: 10,
@@ -180,6 +197,22 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 2 },
   },
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+  },
+  avatarPlaceholder: {
+    backgroundColor: '#007BFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarPlaceholderText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 24,
+  },
+  info: { flex: 1, marginLeft: 15, justifyContent: 'center' },
   name: { fontSize: 18, fontWeight: 'bold', marginBottom: 4 },
   email: { fontSize: 14, color: '#555', marginBottom: 8 },
   modalContainer: { flex: 1, padding: 20, backgroundColor: '#f9f9f9' },
