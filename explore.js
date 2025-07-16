@@ -6,17 +6,22 @@ import {
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
+  Button,
+  Modal,
+  ScrollView,
 } from 'react-native';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 
-export default function Explore({ user }) {
+export default function Explore({ user, onStartChat }) {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUserRoute, setSelectedUserRoute] = useState([]);
+  const [filterDate, setFilterDate] = useState(null); // For future date filtering
 
   const db = firebase.firestore();
 
-  // Step 1: Get user's stops
   const fetchUserStops = async () => {
     const snapshot = await db
       .collection('routes')
@@ -29,7 +34,6 @@ export default function Explore({ user }) {
     return snapshot.docs.map((doc) => doc.data().location);
   };
 
-  // Step 2: Find other users with matching stops
   const fetchMatches = async () => {
     try {
       const userStops = await fetchUserStops();
@@ -40,12 +44,6 @@ export default function Explore({ user }) {
         return;
       }
 
-      // Query all profiles except current user who have route stops in userStops
-      // Firestore doesn't support joins, so we do a two-step process:
-      // 1) Find user IDs who have matching stops
-      // 2) Fetch those profiles
-
-      // Step 2a: Find matching user IDs
       const stopsQuery = await db
         .collectionGroup('stops')
         .where('location', 'in', userStops)
@@ -64,7 +62,6 @@ export default function Explore({ user }) {
         return;
       }
 
-      // Step 2b: Fetch profiles of matching users
       const profilesSnapshot = await db
         .collection('profiles')
         .where(firebase.firestore.FieldPath.documentId(), 'in', Array.from(userIdSet))
@@ -84,9 +81,31 @@ export default function Explore({ user }) {
     }
   };
 
+  const fetchUserRoute = async (userId) => {
+    const snapshot = await db
+      .collection('routes')
+      .doc(userId)
+      .collection('stops')
+      .orderBy('createdAt', 'desc')
+      .get();
+
+    return snapshot.docs.map((doc) => doc.data());
+  };
+
   useEffect(() => {
     fetchMatches();
   }, []);
+
+  const openUserModal = async (user) => {
+    setSelectedUser(user);
+    const route = await fetchUserRoute(user.id);
+    setSelectedUserRoute(route);
+  };
+
+  const closeUserModal = () => {
+    setSelectedUser(null);
+    setSelectedUserRoute([]);
+  };
 
   if (loading) {
     return (
@@ -105,20 +124,45 @@ export default function Explore({ user }) {
   }
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={() => openUserModal(item)}>
       <Text style={styles.name}>{item.name || 'Unnamed Traveler'}</Text>
       <Text style={styles.email}>{item.email}</Text>
+      <Button title="Chat" onPress={() => onStartChat(item)} />
     </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Travelers on your route:</Text>
       <FlatList
         data={matches}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
       />
+
+      {/* Modal for user profile + route */}
+      <Modal visible={!!selectedUser} animationType="slide" onRequestClose={closeUserModal}>
+        <View style={styles.modalContainer}>
+          <Button title="Close" onPress={closeUserModal} />
+          {selectedUser && (
+            <ScrollView>
+              <Text style={styles.modalTitle}>{selectedUser.name}</Text>
+              <Text style={styles.modalSubtitle}>{selectedUser.email}</Text>
+
+              <Text style={styles.routeTitle}>Route:</Text>
+              {selectedUserRoute.length === 0 ? (
+                <Text style={styles.empty}>No route stops</Text>
+              ) : (
+                selectedUserRoute.map((stop, index) => (
+                  <View key={index} style={styles.routeStop}>
+                    <Text style={styles.location}>{stop.location}</Text>
+                    {stop.date ? <Text style={styles.date}>Date: {stop.date}</Text> : null}
+                  </View>
+                ))
+              )}
+            </ScrollView>
+          )}
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -126,7 +170,6 @@ export default function Explore({ user }) {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 10 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 10, textAlign: 'center' },
   card: {
     backgroundColor: '#fff',
     padding: 16,
@@ -138,5 +181,18 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
   },
   name: { fontSize: 18, fontWeight: 'bold', marginBottom: 4 },
-  email: { fontSize: 14, color: '#555' },
+  email: { fontSize: 14, color: '#555', marginBottom: 8 },
+  modalContainer: { flex: 1, padding: 20, backgroundColor: '#f9f9f9' },
+  modalTitle: { fontSize: 24, fontWeight: 'bold', marginBottom: 6 },
+  modalSubtitle: { fontSize: 16, color: '#666', marginBottom: 20 },
+  routeTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
+  routeStop: {
+    backgroundColor: '#fff',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  location: { fontSize: 16, fontWeight: '600' },
+  date: { fontSize: 14, color: '#777' },
+  empty: { fontStyle: 'italic', color: '#777' },
 });
