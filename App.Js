@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, ScrollView } from 'react-native';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
+
 import Profile from './Profile';
+import Meetups from './Meetups';
+// Placeholder imports — create these files as you go
+import Chat from './Chat'; 
+import Explore from './Explore';
+import RoutePlanner from './RoutePlanner';
+import Notifications from './Notifications';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDJX3cxW59Xo-wX0GeSBWm1jzMgh5PzCmw",
@@ -20,6 +28,7 @@ if (!firebase.apps.length) {
 export default function App() {
   const [user, setUser] = useState(null);
   const [profileComplete, setProfileComplete] = useState(false);
+  const [screen, setScreen] = useState('loading'); // 'login', 'profile', 'meetups', 'chat', 'explore', 'routeplanner', 'notifications'
 
   useEffect(() => {
     const unsubscribe = firebase.auth().onAuthStateChanged(async (u) => {
@@ -27,8 +36,10 @@ export default function App() {
       if (u) {
         const doc = await firebase.firestore().collection('profiles').doc(u.uid).get();
         setProfileComplete(doc.exists);
+        setScreen(doc.exists ? 'meetups' : 'profile');
       } else {
         setProfileComplete(false);
+        setScreen('login');
       }
     });
     return unsubscribe;
@@ -38,33 +49,83 @@ export default function App() {
     firebase.auth().signOut();
   };
 
-  if (!user) {
-    // Show your existing login/register UI here
+  if (screen === 'loading') {
     return (
       <View style={styles.container}>
-        <Text>Please login first (add your login/register code here)</Text>
+        <Text>Loading...</Text>
       </View>
     );
   }
 
-  if (!profileComplete) {
+  if (screen === 'login') {
     return (
-      <Profile
-        user={user}
-        onSaveSuccess={() => setProfileComplete(true)}
-      />
+      <View style={styles.container}>
+        <Text>Please login first (add your login/register UI here)</Text>
+      </View>
     );
   }
 
+  if (!user) {
+    return null; // Safety fallback
+  }
+
+  if (!profileComplete && screen !== 'profile') {
+    setScreen('profile');
+    return null;
+  }
+
+  // Navigation bar to switch between main features
+  const NavBar = () => (
+    <View style={styles.navBar}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        <Button title="Profile" onPress={() => setScreen('profile')} />
+        <Button title="Meetups" onPress={() => setScreen('meetups')} />
+        <Button title="Chat" onPress={() => setScreen('chat')} />
+        <Button title="Explore" onPress={() => setScreen('explore')} />
+        <Button title="Route Planner" onPress={() => setScreen('routeplanner')} />
+        <Button title="Notifications" onPress={() => setScreen('notifications')} />
+        <Button title="Logout" onPress={handleLogout} />
+      </ScrollView>
+    </View>
+  );
+
+  // Render screens based on current state
+  const renderScreen = () => {
+    switch (screen) {
+      case 'profile':
+        return <Profile user={user} onSaveSuccess={() => setProfileComplete(true)} />;
+      case 'meetups':
+        return <Meetups user={user} />;
+      case 'chat':
+        return <Chat user={user} />;
+      case 'explore':
+        return <Explore user={user} />;
+      case 'routeplanner':
+        return <RoutePlanner user={user} />;
+      case 'notifications':
+        return <Notifications user={user} />;
+      default:
+        return (
+          <View style={styles.container}>
+            <Text>Unknown screen: {screen}</Text>
+          </View>
+        );
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={{ fontSize: 20 }}>Welcome {user.email}!</Text>
-      <Button title="Logout" onPress={handleLogout} />
-      {/* Add your main app UI here */}
+    <View style={{ flex: 1 }}>
+      <NavBar />
+      {renderScreen()}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
+  navBar: {
+    flexDirection: 'row',
+    paddingVertical: 10,
+    backgroundColor: '#eee',
+  },
 });
