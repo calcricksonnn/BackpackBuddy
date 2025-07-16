@@ -28,9 +28,10 @@ if (!firebase.apps.length) {
 export default function App() {
   const [user, setUser] = useState(null);
   const [profileComplete, setProfileComplete] = useState(false);
-  // Add chatUser state to track who you're chatting with
-  const [chatUser, setChatUser] = useState(null);
   const [screen, setScreen] = useState('loading'); // 'login', 'profile', 'meetups', 'chat', 'explore', 'routeplanner', 'notifications'
+  
+  // New state for the user we are chatting with
+  const [chatWithUser, setChatWithUser] = useState(null);
 
   useEffect(() => {
     const unsubscribe = firebase.auth().onAuthStateChanged(async (u) => {
@@ -51,10 +52,16 @@ export default function App() {
     firebase.auth().signOut();
   };
 
-  // New function to start chat from Explore
-  const startChat = (userToChat) => {
-    setChatUser(userToChat);
+  // Open chat with selected user
+  const openChatWith = (userToChat) => {
+    setChatWithUser(userToChat);
     setScreen('chat');
+  };
+
+  // Go back from chat to meetups screen
+  const goBackFromChat = () => {
+    setChatWithUser(null);
+    setScreen('meetups');
   };
 
   if (screen === 'loading') {
@@ -84,11 +91,7 @@ export default function App() {
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <Button title="Profile" onPress={() => setScreen('profile')} />
         <Button title="Meetups" onPress={() => setScreen('meetups')} />
-        {/* Disable Chat button if chatting to someone specific? Or keep for general chats */}
-        <Button title="Chat" onPress={() => {
-          setChatUser(null); // No specific chat user means general chat screen
-          setScreen('chat');
-        }} />
+        <Button title="Chat" onPress={() => setScreen('chat')} />
         <Button title="Explore" onPress={() => setScreen('explore')} />
         <Button title="Route Planner" onPress={() => setScreen('routeplanner')} />
         <Button title="Notifications" onPress={() => setScreen('notifications')} />
@@ -97,19 +100,24 @@ export default function App() {
     </View>
   );
 
-  // Render screens based on current state, now passing startChat to Explore
+  // Render screens based on current state
   const renderScreen = () => {
     switch (screen) {
       case 'profile':
         return <Profile user={user} onSaveSuccess={() => setProfileComplete(true)} />;
       case 'meetups':
-        return <Meetups user={user} />;
+        // Pass openChatWith callback so Meetups can open chat with a user
+        return <Meetups user={user} onStartChat={openChatWith} />;
       case 'chat':
-        // Pass chatUser and goBack to Chat screen
-        return <Chat user={user} chatWith={chatUser} goBack={() => setScreen('explore')} />;
+        if (!chatWithUser) {
+          setScreen('meetups');
+          return null;
+        }
+        // Pass chatWithUser and goBackFromChat to Chat component
+        return <Chat user={user} chatWith={chatWithUser} goBack={goBackFromChat} />;
       case 'explore':
-        // Pass startChat callback to Explore so it can trigger chat screen
-        return <Explore user={user} onStartChat={startChat} />;
+        // Pass openChatWith callback so Explore can open chat with a user
+        return <Explore user={user} onStartChat={openChatWith} />;
       case 'routeplanner':
         return <RoutePlanner user={user} />;
       case 'notifications':
