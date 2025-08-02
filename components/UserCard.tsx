@@ -1,51 +1,31 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { MockUser } from '../utils/mockData';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { MockUser } from '../hooks/useUsers';
+import { Avatar } from './Avatar';
+import { Card } from './Card';
 
 type Props = {
   user: MockUser;
   onPress: () => void;
 };
 
-export const UserCard: React.FC<Props> = ({ user, onPress }) => {
-  return (
-    <TouchableOpacity onPress={onPress} style={styles.card}>
-      <Image source={{ uri: user.avatar }} style={styles.avatar} />
-      <View style={{ flex: 1 }}>
+export const UserCard: React.FC<Props> = ({ user, onPress }) => (
+  <Pressable onPress={onPress}>
+    <Card style={styles.card}>
+      <Avatar uri={user.avatar} size={48} />
+      <View style={styles.info}>
         <Text style={styles.name}>{user.name}</Text>
         <Text style={styles.bio}>{user.bio}</Text>
         <Text style={styles.location}>{user.location}</Text>
       </View>
-    </TouchableOpacity>
-  );
-};
+    </Card>
+  </Pressable>
+);
 
 const styles = StyleSheet.create({
-  card: {
-    flexDirection: 'row',
-    backgroundColor: '#f9f9f9',
-    padding: 12,
-    marginBottom: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    elevation: 1
-  },
-  avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    marginRight: 12
-  },
-  name: {
-    fontSize: 16,
-    fontWeight: '600'
-  },
-  bio: {
-    fontSize: 14,
-    color: '#666'
-  },
-  location: {
-    fontSize: 13,
-    color: '#999'
-  }
+  card: { flexDirection: 'row', alignItems: 'center' },
+  info: { marginLeft: 12, flex: 1 },
+  name: { fontWeight: '600', fontSize: 16 },
+  bio: { color: '#555', fontSize: 14 },
+  location: { color: '#999', fontSize: 13 }
 });
