@@ -2,19 +2,20 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TextInput,
   TouchableOpacity,
+  StyleSheet,
+  ImageBackground,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
-  Image
+  ScrollView
 } from 'react-native';
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 
 export const RegisterScreen: React.FC = () => {
   const navigation = useNavigation();
-
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
@@ -24,117 +25,128 @@ export const RegisterScreen: React.FC = () => {
     confirmPassword: '',
   });
 
-  const handleChange = (key: string, value: string) => {
-    setForm({ ...form, [key]: value });
-  };
+  const handleChange = (key: string, val: string) =>
+    setForm({ ...form, [key]: val });
 
   const handleSubmit = () => {
-    // Firebase auth logic goes here
     if (form.password !== form.confirmPassword) {
       alert('Passwords do not match');
       return;
     }
-    console.log('Registering user:', form);
+    console.log('Register:', form);
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    <ImageBackground
+      source={require('../../assets/onboarding/bg3.jpg')}
+      style={styles.bg}
+      resizeMode="cover"
     >
-      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-        <Image source={require('../assets/icon.png')} style={styles.logo} />
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+          <BlurView intensity={80} tint="light" style={styles.card}>
+            <Text style={styles.heading}>Create Your Account</Text>
 
-        <View style={styles.card}>
-          <TextInput
-            placeholder="First Name"
-            style={styles.input}
-            value={form.firstName}
-            onChangeText={(val) => handleChange('firstName', val)}
-          />
-          <TextInput
-            placeholder="Last Name"
-            style={styles.input}
-            value={form.lastName}
-            onChangeText={(val) => handleChange('lastName', val)}
-          />
-          <TextInput
-            placeholder="Username"
-            style={styles.input}
-            autoCapitalize="none"
-            value={form.username}
-            onChangeText={(val) => handleChange('username', val)}
-          />
-          <TextInput
-            placeholder="Email"
-            style={styles.input}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            value={form.email}
-            onChangeText={(val) => handleChange('email', val)}
-          />
-          <TextInput
-            placeholder="Password"
-            style={styles.input}
-            secureTextEntry
-            value={form.password}
-            onChangeText={(val) => handleChange('password', val)}
-          />
-          <TextInput
-            placeholder="Confirm Password"
-            style={styles.input}
-            secureTextEntry
-            value={form.confirmPassword}
-            onChangeText={(val) => handleChange('confirmPassword', val)}
-          />
+            <TextInput
+              placeholder="First Name"
+              style={styles.input}
+              placeholderTextColor="#555"
+              value={form.firstName}
+              onChangeText={(v) => handleChange('firstName', v)}
+            />
+            <TextInput
+              placeholder="Last Name"
+              style={styles.input}
+              placeholderTextColor="#555"
+              value={form.lastName}
+              onChangeText={(v) => handleChange('lastName', v)}
+            />
+            <TextInput
+              placeholder="Username"
+              style={styles.input}
+              autoCapitalize="none"
+              placeholderTextColor="#555"
+              value={form.username}
+              onChangeText={(v) => handleChange('username', v)}
+            />
+            <TextInput
+              placeholder="Email"
+              style={styles.input}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              placeholderTextColor="#555"
+              value={form.email}
+              onChangeText={(v) => handleChange('email', v)}
+            />
+            <TextInput
+              placeholder="Password"
+              style={styles.input}
+              placeholderTextColor="#555"
+              secureTextEntry
+              value={form.password}
+              onChangeText={(v) => handleChange('password', v)}
+            />
+            <TextInput
+              placeholder="Confirm Password"
+              style={styles.input}
+              placeholderTextColor="#555"
+              secureTextEntry
+              value={form.confirmPassword}
+              onChangeText={(v) => handleChange('confirmPassword', v)}
+            />
 
-          <TouchableOpacity style={styles.registerButton} onPress={handleSubmit}>
-            <Text style={styles.registerText}>Create Account</Text>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity onPress={handleSubmit}>
+              <LinearGradient
+                colors={['#007AFF', '#005BB5']}
+                style={styles.button}
+              >
+                <Text style={styles.buttonText}>Create Account</Text>
+              </LinearGradient>
+            </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.loginText}>
-            Already have an account? <Text style={styles.loginLink}>Log in</Text>
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </KeyboardAvoidingView>
+            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+              <Text style={styles.link}>
+                Already have an account? <Text style={styles.linkHighlight}>Log in</Text>
+              </Text>
+            </TouchableOpacity>
+          </BlurView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fefefe' },
-  scroll: { alignItems: 'center', justifyContent: 'center', padding: 20 },
-  logo: { width: 80, height: 80, marginBottom: 32 },
+  bg: { flex: 1 },
+  container: { flex: 1, justifyContent: 'center' },
+  scroll: { alignItems: 'center', paddingVertical: 60 },
   card: {
-    width: '100%',
-    backgroundColor: '#fff',
-    borderRadius: 12,
+    width: '90%',
+    borderRadius: 16,
     padding: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 4,
-    marginBottom: 20,
+    alignItems: 'center',
+    marginBottom: 24,
   },
+  heading: { fontSize: 24, fontWeight: '700', marginBottom: 16, color: '#111' },
   input: {
+    width: '100%',
     height: 48,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
-    marginBottom: 20,
+    marginBottom: 16,
     fontSize: 16,
-    paddingHorizontal: 8,
+    color: '#111'
   },
-  registerButton: {
-    backgroundColor: '#007AFF',
+  button: {
+    marginTop: 16,
     paddingVertical: 14,
     borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 10,
+    alignItems: 'center'
   },
-  registerText: { color: '#fff', fontSize: 16, fontWeight: '600' },
-  loginText: { fontSize: 14, color: '#666' },
-  loginLink: { color: '#007AFF', fontWeight: '500' },
+  buttonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  link: { marginTop: 16, fontSize: 14, color: '#ddd' },
+  linkHighlight: { color: '#fff', fontWeight: '500' },
 });
