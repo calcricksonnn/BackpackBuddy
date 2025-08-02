@@ -10,7 +10,24 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
     "assetBundlePatterns": ["**/*"],
-    "sdkVersion": "53.0.0"
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.yourcompany.backpackbuddy"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.yourcompany.backpackbuddy"
+    },
+    "web": {
+      "favicon": "./assets/icon.png"
+    },
+    "plugins": ["expo-notifications"]
   }
 }
