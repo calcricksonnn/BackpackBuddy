@@ -8,7 +8,7 @@ export const OnboardingScreen: React.FC = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.replace('AuthStack');
+      navigation.replace('Login');
     }, 3000);
 
     return () => clearTimeout(timer);
@@ -24,7 +24,7 @@ export const OnboardingScreen: React.FC = () => {
       />
       <Text style={styles.title}>Welcome to BackpackBuddy</Text>
       <Text style={styles.text}>Connect, explore, and journey safely ✈️</Text>
-      <TouchableOpacity onPress={() => navigation.replace('AuthStack')} style={styles.button}>
+      <TouchableOpacity onPress={() => navigation.replace('Login'); style={styles.button}>
         <Text style={styles.buttonText}>Get Started</Text>
       </TouchableOpacity>
     </View>
