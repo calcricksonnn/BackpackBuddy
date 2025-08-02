@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Switch, FlatList } from 'react-native';
-
-const blockedMock = ['catfish89', 'toxicTom'];
+import { View, Text, StyleSheet, Switch, FlatList, Pressable } from 'react-native';
+import { useSafetyStore } from '../store/safetyStore';
 
 export const SafetyCenterScreen: React.FC = () => {
-  const [onlyVerifiedCanMessage, setOnlyVerifiedCanMessage] = useState(true);
+  const {
+    onlyVerifiedCanMessage,
+    toggleMessagingFilter,
+    blockedUsers,
+    unblockUser
+  } = useSafetyStore();
 
   return (
     <View style={styles.container}>
@@ -16,24 +20,23 @@ export const SafetyCenterScreen: React.FC = () => {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label}>Who can message you</Text>
-        <Switch
-          value={onlyVerifiedCanMessage}
-          onValueChange={setOnlyVerifiedCanMessage}
-        />
-        <Text style={styles.subtext}>
-          {onlyVerifiedCanMessage
-            ? 'Only verified users can message you'
-            : 'Anyone nearby can message you'}
-        </Text>
+        <Text style={styles.label}>Only verified users can message you</Text>
+        <Switch value={onlyVerifiedCanMessage} onValueChange={toggleMessagingFilter} />
       </View>
 
       <View style={styles.section}>
         <Text style={styles.label}>Blocked Users</Text>
         <FlatList
-          data={blockedMock}
-          renderItem={({ item }) => <Text style={styles.blocked}>{item}</Text>}
+          data={blockedUsers}
           keyExtractor={(item) => item}
+          renderItem={({ item }) => (
+            <View style={styles.blockedRow}>
+              <Text style={styles.blocked}>{item}</Text>
+              <Pressable onPress={() => unblockUser(item)}>
+                <Text style={styles.unblock}>Unblock</Text>
+              </Pressable>
+            </View>
+          )}
         />
       </View>
 
@@ -51,7 +54,12 @@ const styles = StyleSheet.create({
   section: { marginBottom: 24 },
   label: { fontSize: 16, fontWeight: '500', marginBottom: 6 },
   verified: { color: 'green', fontWeight: '600' },
-  subtext: { color: '#777', marginTop: 4 },
-  blocked: { paddingVertical: 4, color: '#333' },
+  blockedRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 6
+  },
+  blocked: { color: '#333' },
+  unblock: { color: '#007aff' },
   link: { color: '#007aff', marginTop: 8 }
 });
