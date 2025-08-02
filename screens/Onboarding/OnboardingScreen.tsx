@@ -7,17 +7,17 @@ const { width, height } = Dimensions.get('window');
 
 const slides = [
   {
-    bg: require('../../assets/Onboarding/IMG_1238.jpeg'),
+bg: { uri: 'https://imgur.com/a/d4jOkDe' },
     title: 'Meet Travelers Nearby',
     subtitle: 'Connect with fellow backpackers and solo explorers near you.',
   },
   {
-    bg: require('../../assets/Onboarding/IMG_1239.jpeg'),
+bg: { uri: 'https://imgur.com/a/uNQaUeE' },
     title: 'Map Your Journey',
     subtitle: 'Pin, track, and share your adventures visually across the world.',
   },
   {
-    bg: require('../../assets/Onboarding/IMG_1240.jpeg'),
+bg: { uri: 'https://imgur.com/a/7lS7NG2' },
     title: 'Travel Safer, Together',
     subtitle: 'Verified users, privacy control, and community-driven safety tools.',
   },
