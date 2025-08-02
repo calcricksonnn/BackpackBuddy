@@ -4,7 +4,7 @@
     "slug": "backpackbuddy",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon.PNG",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
