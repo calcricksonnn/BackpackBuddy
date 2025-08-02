@@ -1,6 +1,6 @@
 import React from 'react';
 import Onboarding from 'react-native-onboarding-swiper';
-import { Image, Text } from 'react-native';
+import { Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export const OnboardingScreen: React.FC = () => {
@@ -13,21 +13,36 @@ export const OnboardingScreen: React.FC = () => {
       pages={[
         {
           backgroundColor: '#fff',
-          image: <Image source={require('../../assets/illustrations/slide1.png')} style={{ width: 250, height: 250 }} />,
-          title: 'Meet Fellow Travelers',
-          subtitle: 'Find backpackers nearby, share your path, and explore together.',
+          image: (
+            <Image
+              source={require('../../assets/illustrations/slide1.png')}
+              style={{ width: 300, height: 300, resizeMode: 'contain' }}
+            />
+          ),
+          title: 'Meet Travelers Nearby',
+          subtitle: 'Connect with fellow backpackers and solo explorers near you.',
         },
         {
           backgroundColor: '#f2f2f2',
-          image: <Image source={require('../../assets/illustrations/slide2.png')} style={{ width: 250, height: 250 }} />,
+          image: (
+            <Image
+              source={require('../../assets/illustrations/slide2.png')}
+              style={{ width: 300, height: 300, resizeMode: 'contain' }}
+            />
+          ),
           title: 'Map Your Journey',
-          subtitle: 'Log places you’ve been, and see where your paths intersect.',
+          subtitle: 'Pin, track, and share your adventures visually across the world.',
         },
         {
           backgroundColor: '#e5f9ff',
-          image: <Image source={require('../../assets/illustrations/slide3.png')} style={{ width: 250, height: 250 }} />,
-          title: 'Travel Safer',
-          subtitle: 'Meet verified travelers and keep control of your privacy.',
+          image: (
+            <Image
+              source={require('../../assets/illustrations/slide3.png')}
+              style={{ width: 300, height: 300, resizeMode: 'contain' }}
+            />
+          ),
+          title: 'Travel Safer, Together',
+          subtitle: 'Verified users, privacy control, and community-driven safety tools.',
         },
       ]}
       titleStyles={{ fontWeight: '700', fontSize: 22 }}
