@@ -37,11 +37,11 @@ export const RegisterScreen: React.FC = () => {
   };
 
   return (
-    <ImageBackground
-source={require('../../assets/Onboarding/IMG_1239.jpeg')}
-      style={styles.bg}
-      resizeMode="cover"
-    >
+   <ImageBackground
+  source={{ uri: 'https://imgur.com/a/pSdxWRL' }}
+  style={styles.bg}
+  resizeMode="cover"
+>
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
