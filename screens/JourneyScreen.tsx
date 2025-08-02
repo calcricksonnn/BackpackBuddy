@@ -23,7 +23,7 @@ export const JourneyScreen: React.FC = () => {
       <Text style={styles.heading}>My Journeys</Text>
 
       {initialRegion && (
-        <MapView style={={styles.map}} initialRegion={initialRegion}>
+        <MapView style={styles.map} initialRegion={initialRegion}>
           <Polyline coordinates={coords} strokeColor="#007aff" strokeWidth={3} />
           {coords.map((c, i) => (
             <Marker key={i} coordinate={c} />
