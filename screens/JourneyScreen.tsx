@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { FlatList, View, Text, StyleSheet, Modal, TextInput, Pressable, ActivityIndicator } from 'react-native';
+import MapView, { Polyline, Marker } from 'react-native-maps';
 import { useJourneys } from '../hooks/useJourneys';
-import { JourneyCard } from '../components/JourneyCard';
+import { useJourneyMap } from '../hooks/useJourneyMap';
+import { TripCard } from '../components/TripCard';
 
 export const JourneyScreen: React.FC = () => {
   const { journeys, addJourney, isLoading, error } = useJourneys();
+  const { coords, initialRegion } = useJourneyMap(journeys);
   const [modalVisible, setModalVisible] = useState(false);
   const [newTitle, setNewTitle] = useState('');
 
@@ -19,13 +22,22 @@ export const JourneyScreen: React.FC = () => {
     <View style={styles.container}>
       <Text style={styles.heading}>My Journeys</Text>
 
+      {initialRegion && (
+        <MapView style={={styles.map}} initialRegion={initialRegion}>
+          <Polyline coordinates={coords} strokeColor="#007aff" strokeWidth={3} />
+          {coords.map((c, i) => (
+            <Marker key={i} coordinate={c} />
+          ))}
+        </MapView>
+      )}
+
       {isLoading && <ActivityIndicator />}
       {error && <Text style={styles.error}>Failed to load journeys</Text>}
 
       <FlatList
         data={journeys}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <JourneyCard journey={item} />}
+        renderItem={({ item }) => <TripCard trip={item} />}
         contentContainerStyle={{ paddingBottom: 80 }}
       />
 
@@ -60,6 +72,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: '#fff' },
   heading: { fontSize: 24, fontWeight: '600', marginBottom: 12 },
   error: { color: 'red' },
+  map: { height: 200, borderRadius: 12, marginBottom: 16 },
   addButton: {
     position: 'absolute',
     right: 20,
