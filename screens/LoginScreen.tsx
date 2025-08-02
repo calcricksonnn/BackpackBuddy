@@ -26,7 +26,7 @@ export const LoginScreen: React.FC = () => {
 
   return (
     <ImageBackground
-      source={require('../../assets/onboarding/IMG_1239.jpeg')}
+      source={require('../../assets/Onboarding/IMG_1239.jpeg')}
       style={styles.bg}
       resizeMode="cover"
     >
