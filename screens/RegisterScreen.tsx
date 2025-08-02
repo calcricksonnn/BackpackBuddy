@@ -1,74 +1,140 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Image
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export const RegisterScreen: React.FC = () => {
   const navigation = useNavigation();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
 
-  const handleRegister = () => {
-    // TODO: Replace with Firebase register in Step 3
-    if (email && password) {
-      Alert.alert('Registration Success', 'Firebase logic coming next.');
-      // navigation.replace('Explore');
-    } else {
-      Alert.alert('Error', 'Please enter email and password');
+  const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+
+  const handleChange = (key: string, value: string) => {
+    setForm({ ...form, [key]: value });
+  };
+
+  const handleSubmit = () => {
+    // Firebase auth logic goes here
+    if (form.password !== form.confirmPassword) {
+      alert('Passwords do not match');
+      return;
     }
+    console.log('Registering user:', form);
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Create Your Account</Text>
-      <TextInput
-        placeholder="Email"
-        style={styles.input}
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        keyboardType="email-address"
-      />
-      <TextInput
-        placeholder="Password"
-        style={styles.input}
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <TouchableOpacity onPress={handleRegister} style={styles.button}>
-        <Text style={styles.buttonText}>Sign Up</Text>
-      </TouchableOpacity>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+        <Image source={require('../assets/icon.png')} style={styles.logo} />
 
-      <TouchableOpacity onPress={() => navigation.replace('Login')}>
-        <Text style={styles.link}>Already have an account? Log In</Text>
-      </TouchableOpacity>
-    </View>
+        <View style={styles.card}>
+          <TextInput
+            placeholder="First Name"
+            style={styles.input}
+            value={form.firstName}
+            onChangeText={(val) => handleChange('firstName', val)}
+          />
+          <TextInput
+            placeholder="Last Name"
+            style={styles.input}
+            value={form.lastName}
+            onChangeText={(val) => handleChange('lastName', val)}
+          />
+          <TextInput
+            placeholder="Username"
+            style={styles.input}
+            autoCapitalize="none"
+            value={form.username}
+            onChangeText={(val) => handleChange('username', val)}
+          />
+          <TextInput
+            placeholder="Email"
+            style={styles.input}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            value={form.email}
+            onChangeText={(val) => handleChange('email', val)}
+          />
+          <TextInput
+            placeholder="Password"
+            style={styles.input}
+            secureTextEntry
+            value={form.password}
+            onChangeText={(val) => handleChange('password', val)}
+          />
+          <TextInput
+            placeholder="Confirm Password"
+            style={styles.input}
+            secureTextEntry
+            value={form.confirmPassword}
+            onChangeText={(val) => handleChange('confirmPassword', val)}
+          />
+
+          <TouchableOpacity style={styles.registerButton} onPress={handleSubmit}>
+            <Text style={styles.registerText}>Create Account</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+          <Text style={styles.loginText}>
+            Already have an account? <Text style={styles.loginLink}>Log in</Text>
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: '#fff' },
-  title: { fontSize: 22, fontWeight: '600', marginBottom: 32, textAlign: 'center' },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
-    fontSize: 16
+  container: { flex: 1, backgroundColor: '#fefefe' },
+  scroll: { alignItems: 'center', justifyContent: 'center', padding: 20 },
+  logo: { width: 80, height: 80, marginBottom: 32 },
+  card: {
+    width: '100%',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 4,
+    marginBottom: 20,
   },
-  button: {
-    backgroundColor: '#34C759',
-    padding: 14,
+  input: {
+    height: 48,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    marginBottom: 20,
+    fontSize: 16,
+    paddingHorizontal: 8,
+  },
+  registerButton: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 14,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 8
+    marginTop: 10,
   },
-  buttonText: { color: '#fff', fontSize: 16, fontWeight: '500' },
-  link: {
-    color: '#007AFF',
-    fontSize: 14,
-    marginTop: 24,
-    textAlign: 'center'
-  }
+  registerText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  loginText: { fontSize: 14, color: '#666' },
+  loginLink: { color: '#007AFF', fontWeight: '500' },
 });
