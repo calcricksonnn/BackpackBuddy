@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  Image,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export const LoginScreen: React.FC = () => {
@@ -7,68 +16,93 @@ export const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    // TODO: Replace with Firebase login in Step 3
-    if (email && password) {
-      Alert.alert('Login Success', 'Firebase login will be added next.');
-      // navigation.replace('Explore');
-    } else {
-      Alert.alert('Error', 'Please enter email and password');
-    }
-  };
-
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login to BackpackBuddy</Text>
-      <TextInput
-        placeholder="Email"
-        style={styles.input}
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        keyboardType="email-address"
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <Image
+        source={require('../assets/icon.png')}
+        style={styles.logo}
       />
-      <TextInput
-        placeholder="Password"
-        style={styles.input}
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <TouchableOpacity onPress={handleLogin} style={styles.button}>
-        <Text style={styles.buttonText}>Log In</Text>
+
+      <View style={styles.card}>
+        <TextInput
+          placeholder="Email"
+          style={styles.input}
+          placeholderTextColor="#888"
+          autoCapitalize="none"
+          keyboardType="email-address"
+          value={email}
+          onChangeText={setEmail}
+        />
+        <TextInput
+          placeholder="Password"
+          style={styles.input}
+          placeholderTextColor="#888"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
+        <TouchableOpacity style={styles.loginButton}>
+          <Text style={styles.loginText}>Login</Text>
+        </TouchableOpacity>
+      </View>
+
+      <TouchableOpacity style={styles.googleButton}>
+        <Text style={styles.googleText}>Continue with Google</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.replace('Register')}>
-        <Text style={styles.link}>Don't have an account? Sign Up</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+        <Text style={styles.signupText}>
+          Don’t have an account? <Text style={styles.signupLink}>Sign up</Text>
+        </Text>
       </TouchableOpacity>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: '#fff' },
-  title: { fontSize: 22, fontWeight: '600', marginBottom: 32, textAlign: 'center' },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
-    fontSize: 16
+  container: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fefefe', padding: 20 },
+  logo: { width: 80, height: 80, marginBottom: 32 },
+  card: {
+    width: '100%',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 4,
+    marginBottom: 20,
   },
-  button: {
+  input: {
+    height: 48,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    marginBottom: 20,
+    fontSize: 16,
+    paddingHorizontal: 8,
+  },
+  loginButton: {
     backgroundColor: '#007AFF',
-    padding: 14,
+    paddingVertical: 14,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 8
+    marginTop: 10,
   },
-  buttonText: { color: '#fff', fontSize: 16, fontWeight: '500' },
-  link: {
-    color: '#007AFF',
-    fontSize: 14,
-    marginTop: 24,
-    textAlign: 'center'
-  }
+  loginText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  googleButton: {
+    backgroundColor: '#fff',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    marginTop: 8,
+  },
+  googleText: { color: '#111', fontSize: 15 },
+  signupText: { marginTop: 20, fontSize: 14, color: '#666' },
+  signupLink: { color: '#007AFF', fontWeight: '500' },
 });
