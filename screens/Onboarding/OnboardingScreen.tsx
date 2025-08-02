@@ -24,7 +24,8 @@ export const OnboardingScreen: React.FC = () => {
       />
       <Text style={styles.title}>Welcome to BackpackBuddy</Text>
       <Text style={styles.text}>Connect, explore, and journey safely ✈️</Text>
-      <TouchableOpacity onPress={() => navigation.replace('Login'); style={styles.button}>
+
+      <TouchableOpacity style={styles.button} onPress={() => navigation.replace('Login')}>
         <Text style={styles.buttonText}>Get Started</Text>
       </TouchableOpacity>
     </View>
