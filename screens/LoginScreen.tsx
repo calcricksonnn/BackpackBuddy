@@ -8,10 +8,10 @@ export const LoginScreen: React.FC = () => {
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    // TODO: Replace with Firebase login in next step
+    // TODO: Replace with Firebase login in Step 3
     if (email && password) {
       Alert.alert('Login Success', 'Firebase login will be added next.');
-      // navigation.replace('Explore'); // or whatever your first main tab screen is
+      // navigation.replace('Explore');
     } else {
       Alert.alert('Error', 'Please enter email and password');
     }
@@ -38,6 +38,10 @@ export const LoginScreen: React.FC = () => {
       <TouchableOpacity onPress={handleLogin} style={styles.button}>
         <Text style={styles.buttonText}>Log In</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.replace('Register')}>
+        <Text style={styles.link}>Don't have an account? Sign Up</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -60,5 +64,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 8
   },
-  buttonText: { color: '#fff', fontSize: 16, fontWeight: '500' }
+  buttonText: { color: '#fff', fontSize: 16, fontWeight: '500' },
+  link: {
+    color: '#007AFF',
+    fontSize: 14,
+    marginTop: 24,
+    textAlign: 'center'
+  }
 });
