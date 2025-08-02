@@ -38,7 +38,7 @@ export const RegisterScreen: React.FC = () => {
 
   return (
     <ImageBackground
-      source={require('../../assets/onboarding/IMG_1240.jpeg')}
+      source={require('../../assets/Onboarding/IMG_1240.jpeg')}
       style={styles.bg}
       resizeMode="cover"
     >
