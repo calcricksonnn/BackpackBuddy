@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TextInput,
   TouchableOpacity,
+  StyleSheet,
+  ImageBackground,
   KeyboardAvoidingView,
   Platform,
-  Image,
+  ScrollView
 } from 'react-native';
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 
 export const LoginScreen: React.FC = () => {
@@ -16,93 +19,93 @@ export const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const handleLogin = () => {
+    console.log('Login:', { email, password });
+    // TODO: Call Firebase/Supabase auth
+  };
+
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    <ImageBackground
+      source={require('../../assets/onboarding/bg2.jpg')}
+      style={styles.bg}
+      resizeMode="cover"
     >
-      <Image
-        source={require('../assets/icon.png')}
-        style={styles.logo}
-      />
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+          <BlurView intensity={80} tint="light" style={styles.card}>
+            <Text style={styles.heading}>Welcome Back</Text>
 
-      <View style={styles.card}>
-        <TextInput
-          placeholder="Email"
-          style={styles.input}
-          placeholderTextColor="#888"
-          autoCapitalize="none"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-        />
-        <TextInput
-          placeholder="Password"
-          style={styles.input}
-          placeholderTextColor="#888"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
-        <TouchableOpacity style={styles.loginButton}>
-          <Text style={styles.loginText}>Login</Text>
-        </TouchableOpacity>
-      </View>
+            <TextInput
+              placeholder="Email"
+              style={styles.input}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              placeholderTextColor="#555"
+              value={email}
+              onChangeText={setEmail}
+            />
 
-      <TouchableOpacity style={styles.googleButton}>
-        <Text style={styles.googleText}>Continue with Google</Text>
-      </TouchableOpacity>
+            <TextInput
+              placeholder="Password"
+              style={styles.input}
+              secureTextEntry
+              placeholderTextColor="#555"
+              value={password}
+              onChangeText={setPassword}
+            />
 
-      <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-        <Text style={styles.signupText}>
-          Don’t have an account? <Text style={styles.signupLink}>Sign up</Text>
-        </Text>
-      </TouchableOpacity>
-    </KeyboardAvoidingView>
+            <TouchableOpacity onPress={handleLogin}>
+              <LinearGradient
+                colors={['#007AFF', '#005BB5']}
+                style={styles.button}
+              >
+                <Text style={styles.buttonText}>Log In</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+              <Text style={styles.link}>
+                Don’t have an account? <Text style={styles.linkHighlight}>Sign up</Text>
+              </Text>
+            </TouchableOpacity>
+          </BlurView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fefefe', padding: 20 },
-  logo: { width: 80, height: 80, marginBottom: 32 },
+  bg: { flex: 1 },
+  container: { flex: 1, justifyContent: 'center' },
+  scroll: { alignItems: 'center', paddingVertical: 60 },
   card: {
-    width: '100%',
-    backgroundColor: '#fff',
-    borderRadius: 12,
+    width: '90%',
+    borderRadius: 16,
     padding: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 4,
-    marginBottom: 20,
+    alignItems: 'center',
+    marginBottom: 24,
   },
+  heading: { fontSize: 24, fontWeight: '700', marginBottom: 16, color: '#111' },
   input: {
+    width: '100%',
     height: 48,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
-    marginBottom: 20,
+    marginBottom: 16,
     fontSize: 16,
-    paddingHorizontal: 8,
+    color: '#111'
   },
-  loginButton: {
-    backgroundColor: '#007AFF',
+  button: {
+    marginTop: 16,
     paddingVertical: 14,
     borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 10,
+    alignItems: 'center'
   },
-  loginText: { color: '#fff', fontSize: 16, fontWeight: '600' },
-  googleButton: {
-    backgroundColor: '#fff',
-    borderColor: '#ccc',
-    borderWidth: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    marginTop: 8,
-  },
-  googleText: { color: '#111', fontSize: 15 },
-  signupText: { marginTop: 20, fontSize: 14, color: '#666' },
-  signupLink: { color: '#007AFF', fontWeight: '500' },
+  buttonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  link: { marginTop: 16, fontSize: 14, color: '#ddd' },
+  linkHighlight: { color: '#fff', fontWeight: '500' },
 });
