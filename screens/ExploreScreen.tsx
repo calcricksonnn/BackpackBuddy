@@ -1,17 +1,21 @@
 import React from 'react';
-import { FlatList, StyleSheet, View, Text } from 'react-native';
+import { FlatList, StyleSheet, View, Text, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { mockUsers } from '../utils/mockData';
+import { useUsers } from '../hooks/useUsers';
 import { UserCard } from '../components/UserCard';
 
 export const ExploreScreen: React.FC = () => {
   const navigation = useNavigation();
+  const { users, isLoading, error } = useUsers();
+
+  if (isLoading) return <ActivityIndicator style={{ marginTop: 48 }} />;
+  if (error) return <Text style={{ color: 'red' }}>Failed to load users.</Text>;
 
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Nearby Travellers</Text>
       <FlatList
-        data={mockUsers}
+        data={users}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <UserCard user={item} onPress={() => navigation.navigate('Profile', { userId: item.id })} />
