@@ -1,3 +1,4 @@
+// Same imports as before
 import React, { useState } from 'react';
 import {
   View,
@@ -14,7 +15,6 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import * as Animatable from 'react-native-animatable';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
 import { useFonts, Poppins_700Bold, Poppins_400Regular } from '@expo-google-fonts/poppins';
 import AppLoading from 'expo-app-loading';
 
@@ -57,7 +57,7 @@ export const LoginScreen: React.FC = () => {
 
             <TextInput
               placeholder="Email"
-              placeholderTextColor="#aaa"
+              placeholderTextColor="#eee"
               style={styles.input}
               value={email}
               onChangeText={setEmail}
@@ -67,7 +67,7 @@ export const LoginScreen: React.FC = () => {
 
             <TextInput
               placeholder="Password"
-              placeholderTextColor="#aaa"
+              placeholderTextColor="#eee"
               style={styles.input}
               value={password}
               onChangeText={setPassword}
@@ -112,7 +112,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.15)',
     borderRadius: 20,
     padding: 24,
-    backdropFilter: 'blur(10px)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.2)',
   },
@@ -131,6 +130,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     fontSize: 16,
     color: '#fff',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
   },
   loginButton: {
     marginTop: 8,
@@ -146,13 +147,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins_700Bold',
   },
   link: {
-    marginTop: 16,
-    color: '#ccc',
+    marginTop: 20,
+    color: '#eee',
     textAlign: 'center',
+    fontSize: 14,
     fontFamily: 'Poppins_400Regular',
   },
   linkHighlight: {
     color: '#fff',
-    fontWeight: '600',
+    fontWeight: '700',
   },
 });
