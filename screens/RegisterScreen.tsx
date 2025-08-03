@@ -10,10 +10,11 @@ import {
   Platform,
   ScrollView,
   StatusBar,
+  Alert,
 } from 'react-native';
-import { BlurView } from 'expo-blur';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import * as Animatable from 'react-native-animatable';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts, Poppins_700Bold, Poppins_400Regular } from '@expo-google-fonts/poppins';
 import AppLoading from 'expo-app-loading';
 
@@ -28,167 +29,182 @@ export const RegisterScreen: React.FC = () => {
     confirmPassword: '',
   });
 
-  const [fontsLoaded] = useFonts({
+  const handleChange = (key: string, val: string) => {
+    setForm({ ...form, [key]: val });
+  };
+
+  const handleSubmit = () => {
+    if (form.password !== form.confirmPassword) {
+      Alert.alert('Oops!', 'Passwords do not match');
+      return;
+    }
+
+    console.log('Register:', form);
+    // TODO: Send form data to backend
+  };
+
+  let [fontsLoaded] = useFonts({
     Poppins_700Bold,
     Poppins_400Regular,
   });
 
   if (!fontsLoaded) return <AppLoading />;
 
-  const handleChange = (key: string, val: string) =>
-    setForm({ ...form, [key]: val });
-
-  const handleSubmit = () => {
-    if (form.password !== form.confirmPassword) {
-      alert('Passwords do not match');
-      return;
-    }
-    console.log('Register:', form);
-    // TODO: Hook to backend
-  };
-
   return (
-    <View style={{ flex: 1 }}>
+    <ImageBackground
+      source={require('../assets/onboarding/bg3.png')}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <LinearGradient
+        colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0.8)']}
+        style={StyleSheet.absoluteFill}
+      />
       <StatusBar translucent backgroundColor="transparent" />
-      <ImageBackground
-        source={require('../assets/onboarding/bg3.png')}
-        style={styles.bg}
-        resizeMode="cover"
+
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.flex}
       >
-        <LinearGradient
-          colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.75)']}
-          style={StyleSheet.absoluteFill}
-        />
-        <KeyboardAvoidingView
-          style={styles.container}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        >
-          <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-            <BlurView intensity={90} tint="light" style={styles.card}>
-              <Text style={styles.heading}>Create Your Account</Text>
+        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+          <Animatable.View animation="fadeInUp" delay={200} style={styles.card}>
+            <Text style={styles.heading}>Create Account 🧭</Text>
 
-              <TextInput
-                placeholder="First Name"
-                style={styles.input}
-                placeholderTextColor="#888"
-                value={form.firstName}
-                onChangeText={(v) => handleChange('firstName', v)}
-              />
-              <TextInput
-                placeholder="Last Name"
-                style={styles.input}
-                placeholderTextColor="#888"
-                value={form.lastName}
-                onChangeText={(v) => handleChange('lastName', v)}
-              />
-              <TextInput
-                placeholder="Username"
-                style={styles.input}
-                autoCapitalize="none"
-                placeholderTextColor="#888"
-                value={form.username}
-                onChangeText={(v) => handleChange('username', v)}
-              />
-              <TextInput
-                placeholder="Email"
-                style={styles.input}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                placeholderTextColor="#888"
-                value={form.email}
-                onChangeText={(v) => handleChange('email', v)}
-              />
-              <TextInput
-                placeholder="Password"
-                style={styles.input}
-                placeholderTextColor="#888"
-                secureTextEntry
-                value={form.password}
-                onChangeText={(v) => handleChange('password', v)}
-              />
-              <TextInput
-                placeholder="Confirm Password"
-                style={styles.input}
-                placeholderTextColor="#888"
-                secureTextEntry
-                value={form.confirmPassword}
-                onChangeText={(v) => handleChange('confirmPassword', v)}
-              />
+            <TextInput
+              placeholder="First Name"
+              placeholderTextColor="#eee"
+              style={styles.input}
+              value={form.firstName}
+              onChangeText={(v) => handleChange('firstName', v)}
+            />
 
-              <TouchableOpacity onPress={handleSubmit}>
-                <LinearGradient colors={['#007AFF', '#005BB5']} style={styles.button}>
-                  <Text style={styles.buttonText}>Create Account</Text>
-                </LinearGradient>
-              </TouchableOpacity>
+            <TextInput
+              placeholder="Last Name"
+              placeholderTextColor="#eee"
+              style={styles.input}
+              value={form.lastName}
+              onChangeText={(v) => handleChange('lastName', v)}
+            />
 
-              <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                <Text style={styles.link}>
-                  Already have an account?{' '}
-                  <Text style={styles.linkHighlight}>Log in</Text>
-                </Text>
-              </TouchableOpacity>
-            </BlurView>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </ImageBackground>
-    </View>
+            <TextInput
+              placeholder="Username"
+              placeholderTextColor="#eee"
+              style={styles.input}
+              value={form.username}
+              onChangeText={(v) => handleChange('username', v)}
+              autoCapitalize="none"
+            />
+
+            <TextInput
+              placeholder="Email"
+              placeholderTextColor="#eee"
+              style={styles.input}
+              value={form.email}
+              onChangeText={(v) => handleChange('email', v)}
+              autoCapitalize="none"
+              keyboardType="email-address"
+            />
+
+            <TextInput
+              placeholder="Password"
+              placeholderTextColor="#eee"
+              style={styles.input}
+              value={form.password}
+              onChangeText={(v) => handleChange('password', v)}
+              secureTextEntry
+            />
+
+            <TextInput
+              placeholder="Confirm Password"
+              placeholderTextColor="#eee"
+              style={styles.input}
+              value={form.confirmPassword}
+              onChangeText={(v) => handleChange('confirmPassword', v)}
+              secureTextEntry
+            />
+
+            <TouchableOpacity onPress={handleSubmit} style={styles.registerButton}>
+              <LinearGradient
+                colors={['#007AFF', '#005BB5']}
+                style={styles.registerGradient}
+              >
+                <Text style={styles.registerText}>Create Account</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+              <Text style={styles.link}>
+                Already have an account?{' '}
+                <Text style={styles.linkHighlight}>Log in</Text>
+              </Text>
+            </TouchableOpacity>
+          </Animatable.View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  bg: { flex: 1 },
-  container: { flex: 1, justifyContent: 'center' },
-  scroll: { alignItems: 'center', paddingVertical: 60 },
+  flex: {
+    flex: 1,
+  },
+  background: {
+    flex: 1,
+  },
+  scroll: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+    paddingBottom: 60,
+  },
   card: {
-    width: '90%',
+    backgroundColor: 'rgba(255,255,255,0.15)',
     borderRadius: 20,
-    padding: 28,
-    alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.85)',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 8 },
+    padding: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
   },
   heading: {
     fontSize: 26,
     fontFamily: 'Poppins_700Bold',
+    color: '#fff',
     marginBottom: 20,
-    color: '#111',
+    textAlign: 'center',
   },
   input: {
-    width: '100%',
     height: 48,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    marginBottom: 16,
-    fontSize: 16,
-    color: '#111',
-    fontFamily: 'Poppins_400Regular',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    marginBottom: 14,
+    fontSize: 15,
+    color: '#fff',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
   },
-  button: {
-    marginTop: 20,
+  registerButton: {
+    marginTop: 12,
+  },
+  registerGradient: {
     paddingVertical: 14,
-    paddingHorizontal: 38,
-    borderRadius: 28,
+    borderRadius: 12,
     alignItems: 'center',
-    width: '100%',
   },
-  buttonText: {
+  registerText: {
     color: '#fff',
     fontSize: 16,
     fontFamily: 'Poppins_700Bold',
-    textAlign: 'center',
   },
   link: {
-    marginTop: 18,
-    fontSize: 14,
-    color: '#666',
-    fontFamily: 'Poppins_400Regular',
+    marginTop: 20,
+    color: '#eee',
     textAlign: 'center',
+    fontSize: 14,
+    fontFamily: 'Poppins_400Regular',
   },
   linkHighlight: {
-    color: '#007AFF',
-    fontWeight: '600',
+    color: '#fff',
+    fontWeight: '700',
   },
 });
