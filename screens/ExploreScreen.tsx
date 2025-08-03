@@ -12,214 +12,204 @@ import {
   StatusBar,
   Platform,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { BlurView } from "expo-blur";
-import * as Animatable from "react-native-animatable";
 import { useNavigation } from "@react-navigation/native";
-import Swiper from "react-native-deck-swiper";
-import TravelerCard from "../components/TravelerCard"; // <--- make sure this is correct path
 
 const { width } = Dimensions.get("window");
 
-// ---- MOCK DATA ----
+// MOCK DATA (replace with API later)
 const heroImage =
   "https://images.unsplash.com/photo-1465101162946-4377e57745c3?auto=format&fit=crop&w=900&q=80";
 const myAvatar = "https://randomuser.me/api/portraits/men/3.jpg";
 
-const travelers = [
+const nearbyTravelers = [
   {
     id: "1",
-    name: "Sophie",
-    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-    badge: "Hostel legend",
-    age: 23,
-    location: "Bali",
-    bio: "Solo explorer. Love sunrise hikes, street food, and hostel card games.",
-    interests: ["Surfing", "Hiking", "BBQ"],
+    name: "Maya",
+    avatar: "https://randomuser.me/api/portraits/women/68.jpg",
+    flag: "🇩🇪",
+    status: "New in town",
+    mutuals: 2,
+    interests: ["Surfing", "Hiking"],
   },
   {
     id: "2",
-    name: "James",
+    name: "Jack",
     avatar: "https://randomuser.me/api/portraits/men/52.jpg",
-    badge: "Just arrived",
-    age: 25,
-    location: "Perth",
-    bio: "Looking for new mates to explore the west coast. Who’s keen?",
-    interests: ["Road trips", "Beaches", "Live music"],
+    flag: "🇬🇧",
+    status: "Looking for hiking buddy",
+    mutuals: 0,
+    interests: ["Hiking", "Hostel Games"],
   },
   {
     id: "3",
-    name: "Anya",
-    avatar: "https://randomuser.me/api/portraits/women/68.jpg",
-    badge: "First timer",
-    age: 20,
-    location: "Cervantes",
-    bio: "First trip down under! Keen to meet for coffee or hostel events.",
-    interests: ["Cafes", "Art", "Snorkeling"],
+    name: "Yuki",
+    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+    flag: "🇯🇵",
+    status: "Just arrived",
+    mutuals: 1,
+    interests: ["Road Trip", "Beaches"],
   },
 ];
 
-// (Your meetups and notices data here, not shown for brevity)
+const meetups = [
+  {
+    id: "1",
+    title: "Hostel BBQ",
+    time: "Tonight 7pm",
+    location: "Main Courtyard",
+    img: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+    joined: 8,
+  },
+  {
+    id: "2",
+    title: "Beach Sunrise Run",
+    time: "Tomorrow 5:30am",
+    location: "Sandy Point",
+    img: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=900&q=80",
+    joined: 4,
+  },
+];
 
-const HeroHeader = ({
-  heroImage,
-  userAvatar,
-  unread,
-  onProfile,
-  onInbox,
-  hostelName,
-  checkedInCount,
-}) => (
-  <View style={styles.heroContainer}>
-    <Image source={{ uri: heroImage }} style={styles.heroImage} />
-    <BlurView intensity={75} tint="dark" style={styles.heroBlur} />
-    <LinearGradient
-      colors={["#00000088", "#222D50"]}
-      style={styles.heroGradient}
-    />
+const shoutouts = [
+  {
+    id: "1",
+    author: "Yuki",
+    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+    text: "Anyone driving south tomorrow? Looking to share a ride!",
+    replies: 3,
+    time: "11m",
+  },
+  {
+    id: "2",
+    author: "Maya",
+    avatar: "https://randomuser.me/api/portraits/women/68.jpg",
+    text: "Lost my flip flops in the kitchen 🙈",
+    replies: 1,
+    time: "26m",
+  },
+];
 
-    <View style={styles.heroTopRow}>
-      {/* Avatar with pulse animation */}
-      <TouchableOpacity onPress={onProfile} activeOpacity={0.8}>
-        <Animatable.View
-          animation="pulse"
-          iterationCount="infinite"
-          duration={1900}
-          style={styles.avatarPulse}
-        >
-          <Image source={{ uri: userAvatar }} style={styles.heroAvatar} />
-        </Animatable.View>
-      </TouchableOpacity>
-
-      {/* Inbox with glowing badge */}
-      <TouchableOpacity onPress={onInbox} activeOpacity={0.8}>
-        <Animatable.View
-          animation="fadeIn"
-          duration={900}
-          delay={600}
-          style={styles.inboxIconWrap}
-        >
-          <Ionicons name="chatbubble-ellipses-outline" size={28} color="#fff" />
-          {unread ? <View style={styles.inboxDotGlow} /> : null}
-        </Animatable.View>
-      </TouchableOpacity>
-    </View>
-
+// ---------- COMPONENTS ------------
+const HeroHeader = ({ heroImage, myAvatar }) => (
+  <View style={styles.heroWrap}>
+    <Image source={{ uri: heroImage }} style={styles.heroBgImg} blurRadius={2} />
+    <BlurView intensity={75} tint="light" style={styles.heroBlur} />
     <View style={styles.heroContent}>
-      <Animatable.Text
-        animation="fadeInDown"
-        duration={1200}
-        style={styles.heroGreet}
-      >
-        Hey Cal,
-      </Animatable.Text>
-      <Animatable.Text
-        animation="fadeInDown"
-        delay={150}
-        duration={1200}
-        style={styles.heroTitle}
-      >
-        Welcome to Cervantes YHA
-      </Animatable.Text>
-      <Animatable.Text
-        animation="fadeInUp"
-        delay={250}
-        duration={1000}
-        style={styles.heroSub}
-      >
-        <Ionicons name="location" size={13} color="#fff" />{" "}
-        <Text style={{ fontWeight: "700", color: "#63ffb5" }}>
-          {12} backpackers
-        </Text>{" "}
-        checked in nearby
-      </Animatable.Text>
+      <Image source={{ uri: myAvatar }} style={styles.heroAvatar} />
+      <View style={{ marginLeft: 16 }}>
+        <Text style={styles.heroHello}>Welcome back, Cal 👋</Text>
+        <Text style={styles.heroSub}>Cervantes YHA • 17° Sunny</Text>
+      </View>
     </View>
   </View>
 );
 
+// ---------- MAIN SCREEN ------------
 const ExploreScreen = () => {
   const navigation = useNavigation();
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar
-        barStyle={Platform.OS === "ios" ? "light-content" : "light-content"}
-      />
-      <HeroHeader
-        heroImage={heroImage}
-        userAvatar={myAvatar}
-        unread={true}
-        onProfile={() => navigation.navigate("Profile")}
-        onInbox={() => navigation.navigate("Inbox")}
-        hostelName="Cervantes YHA"
-        checkedInCount={12}
-      />
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle={Platform.OS === "ios" ? "dark-content" : "dark-content"} />
+      <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
+        {/* HERO */}
+        <HeroHeader heroImage={heroImage} myAvatar={myAvatar} />
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 90 }}
-      >
-        {/* SWIPE DECK: PEOPLE NEARBY */}
-        <View style={styles.swiperSection}>
-          <Text style={styles.sectionTitle}>People Nearby</Text>
-          <Swiper
-            cards={travelers}
-            renderCard={(card) =>
-              card ? (
-                <TravelerCard
-                  traveler={card}
-                  onConnect={() => {
-                    // connect logic here, e.g. navigation.navigate("Chat", { userId: card.id })
-                  }}
-                  onProfile={() => {
-                    // show profile modal, or navigation.navigate("Profile", { userId: card.id })
-                  }}
-                />
-              ) : (
-                <View style={styles.noMoreCards}>
-                  <Text style={{ color: "#fff", fontWeight: "700", fontSize: 19 }}>
-                    No more travelers nearby.
-                  </Text>
-                  <Text style={{ color: "#b2b8cc", marginTop: 5 }}>Check back soon!</Text>
+        {/* NEARBY TRAVELERS */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Backpackers Nearby</Text>
+          <FlatList
+            data={nearbyTravelers}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingVertical: 6, paddingLeft: 8, gap: 18 }}
+            keyExtractor={item => item.id}
+            renderItem={({ item }) => (
+              <TouchableOpacity style={styles.travelerCard} onPress={() => navigation.navigate("Profile", { userId: item.id })}>
+                <Image source={{ uri: item.avatar }} style={styles.travelerAvatar} />
+                <View style={styles.travelerBadgeRow}>
+                  <Text style={styles.travelerFlag}>{item.flag}</Text>
+                  <Text style={styles.travelerName}>{item.name}</Text>
                 </View>
-              )
-            }
-            cardIndex={0}
-            backgroundColor="transparent"
-            stackSize={3}
-            stackSeparation={19}
-            overlayLabels={{
-              left: {
-                title: "Skip",
-                style: { label: { color: "#fff", fontSize: 22 } },
-              },
-              right: {
-                title: "Connect",
-                style: { label: { color: "#4ADE80", fontSize: 22 } },
-              },
-            }}
-            onSwipedRight={(idx) => {
-              // handle connect
-            }}
-            onSwipedLeft={(idx) => {
-              // handle skip
-            }}
-            disableBottomSwipe
-            disableTopSwipe
+                <Text style={styles.travelerStatus}>{item.status}</Text>
+                <View style={styles.travelerInterests}>
+                  {item.interests.map((interest, i) => (
+                    <View style={styles.travelerInterestPill} key={i}>
+                      <Text style={styles.travelerInterestTxt}>{interest}</Text>
+                    </View>
+                  ))}
+                </View>
+                {item.mutuals > 0 && (
+                  <Text style={styles.travelerMutuals}>👥 {item.mutuals} mutuals</Text>
+                )}
+              </TouchableOpacity>
+            )}
           />
         </View>
 
-        {/* Meetups, Noticeboard, etc. go here... */}
+        {/* MEETUPS */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Meetups & Events</Text>
+          <FlatList
+            data={meetups}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingVertical: 6, paddingLeft: 8, gap: 16 }}
+            keyExtractor={item => item.id}
+            renderItem={({ item }) => (
+              <TouchableOpacity style={styles.meetupCard} onPress={() => navigation.navigate("MeetupDetail", { meetupId: item.id })}>
+                <Image source={{ uri: item.img }} style={styles.meetupImg} />
+                <View style={styles.meetupInfo}>
+                  <Text style={styles.meetupTitle}>{item.title}</Text>
+                  <Text style={styles.meetupTime}>{item.time}</Text>
+                  <Text style={styles.meetupLoc}><Feather name="map-pin" size={13} color="#60a5fa" /> {item.location}</Text>
+                </View>
+                <View style={styles.meetupJoinedRow}>
+                  <Ionicons name="people" color="#60a5fa" size={16} />
+                  <Text style={styles.meetupJoinedTxt}>{item.joined} joined</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+
+        {/* SHOUTOUTS / NOTICEBOARD */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Shoutouts</Text>
+          {shoutouts.map(item => (
+            <View key={item.id} style={styles.shoutoutCard}>
+              <Image source={{ uri: item.avatar }} style={styles.shoutoutAvatar} />
+              <View style={styles.shoutoutContent}>
+                <Text style={styles.shoutoutMsg}>
+                  <Text style={{ fontWeight: "700", color: "#3B82F6" }}>{item.author}</Text>
+                  {"  "}{item.text}
+                </Text>
+                <View style={styles.shoutoutMetaRow}>
+                  <Text style={styles.shoutoutTime}>{item.time} ago</Text>
+                  <Text style={styles.shoutoutReplies}>{item.replies} replies</Text>
+                  <TouchableOpacity style={styles.shoutoutReplyBtn}>
+                    <Text style={styles.shoutoutReplyBtnTxt}>Reply</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          ))}
+        </View>
       </ScrollView>
 
-      {/* FAB */}
+      {/* QUICK ACTION FAB */}
       <TouchableOpacity
         style={styles.fab}
         onPress={() => navigation.navigate("CreatePost")}
-        activeOpacity={0.87}
+        activeOpacity={0.92}
       >
-        <LinearGradient colors={["#3B82F6", "#818CF8"]} style={styles.fabGrad}>
+        <LinearGradient
+          colors={["#3B82F6", "#60A5FA"]}
+          style={styles.fabGrad}
+        >
           <Ionicons name="add" size={32} color="#fff" />
         </LinearGradient>
       </TouchableOpacity>
@@ -228,154 +218,256 @@ const ExploreScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#141825" },
-  heroContainer: {
+  safeArea: { flex: 1, backgroundColor: "#f8fbff" },
+
+  // HERO
+  heroWrap: {
     width: '100%',
-    height: 205,
-    borderBottomLeftRadius: 45,
-    borderBottomRightRadius: 45,
+    height: 100,
+    borderBottomLeftRadius: 35,
+    borderBottomRightRadius: 35,
     overflow: 'hidden',
+    marginBottom: 16,
     position: 'relative',
-    backgroundColor: '#191c2a',
-    marginBottom: 9,
+    backgroundColor: "#dbeafe",
   },
-  heroImage: {
+  heroBgImg: {
     width: '100%',
     height: '100%',
     position: 'absolute',
-    top: 0,
-    left: 0,
+    top: 0, left: 0,
+    opacity: 0.37,
   },
   heroBlur: {
     ...StyleSheet.absoluteFillObject,
-    borderBottomLeftRadius: 45,
-    borderBottomRightRadius: 45,
-  },
-  heroGradient: {
-    ...StyleSheet.absoluteFillObject,
-    borderBottomLeftRadius: 45,
-    borderBottomRightRadius: 45,
-  },
-  heroTopRow: {
-    position: 'absolute',
-    top: 24,
-    left: 22,
-    right: 22,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    zIndex: 3,
-  },
-  avatarPulse: {
-    shadowColor: '#fff',
-    shadowOpacity: 0.18,
-    shadowRadius: 9,
-    shadowOffset: { width: 0, height: 1 },
-    borderRadius: 26,
-    backgroundColor: '#27335599',
-    padding: 2,
-  },
-  heroAvatar: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    borderWidth: 3,
-    borderColor: '#7de2fc',
-    backgroundColor: '#fff',
-  },
-  inboxIconWrap: {
-    position: 'relative',
-    backgroundColor: '#26326c77',
-    borderRadius: 22,
-    padding: 7,
-  },
-  inboxDotGlow: {
-    position: 'absolute',
-    top: 6,
-    right: 7,
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: '#22c55e',
-    borderWidth: 1.5,
-    borderColor: '#fff',
-    shadowColor: '#22c55e',
-    shadowOpacity: 0.8,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 0 },
+    borderBottomLeftRadius: 35,
+    borderBottomRightRadius: 35,
   },
   heroContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
     position: 'absolute',
-    bottom: 36,
-    left: 28,
-    zIndex: 3,
+    left: 19, bottom: 16,
   },
-  heroGreet: {
-    color: '#fff',
-    fontSize: 17,
-    fontWeight: '700',
-    marginBottom: 1,
-    textShadowColor: '#000a',
-    textShadowRadius: 3,
+  heroAvatar: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    borderWidth: 2,
+    borderColor: "#fff",
+    backgroundColor: "#e0eaff",
   },
-  heroTitle: {
-    color: '#fff',
-    fontSize: 26,
-    fontWeight: '900',
-    marginBottom: 3,
-    letterSpacing: -0.7,
-    textShadowColor: '#0009',
-    textShadowRadius: 9,
+  heroHello: {
+    fontSize: 19,
+    fontWeight: "800",
+    color: "#22325e",
+    letterSpacing: -0.3,
+    marginBottom: 2,
   },
   heroSub: {
-    color: '#dbeafe',
-    fontSize: 15,
-    fontWeight: '500',
-    letterSpacing: -0.2,
-    marginTop: 3,
+    color: "#3B82F6",
+    fontWeight: "700",
+    fontSize: 13,
+    letterSpacing: 0.01,
   },
-  swiperSection: {
-    marginTop: 25,
-    marginBottom: 8,
-    alignItems: "center",
-    minHeight: 420,
+
+  // SECTIONS
+  section: {
+    marginBottom: 20,
+    marginTop: 2,
+    paddingHorizontal: 10,
   },
   sectionTitle: {
-    color: "#fff",
-    fontSize: 21,
+    fontSize: 19,
     fontWeight: "900",
-    marginBottom: 12,
-    letterSpacing: -0.7,
-    alignSelf: "flex-start",
-    marginLeft: 18,
+    color: "#1e293b",
+    marginBottom: 7,
+    marginLeft: 6,
+    letterSpacing: -0.1,
   },
-  noMoreCards: {
-    alignItems: "center",
-    justifyContent: "center",
-    height: 360,
-    width: 340,
-    backgroundColor: "#21253a",
+
+  // TRAVELER CARDS
+  travelerCard: {
+    backgroundColor: "#fff",
     borderRadius: 22,
-    shadowColor: "#0009",
-    shadowOpacity: 0.12,
+    paddingVertical: 13,
+    paddingHorizontal: 15,
+    alignItems: "center",
+    width: 125,
+    shadowColor: "#72b2fa",
+    shadowOpacity: 0.06,
+    shadowOffset: { width: 0, height: 4 },
     shadowRadius: 10,
-    marginTop: 25,
+    marginBottom: 5,
   },
+  travelerAvatar: {
+    width: 53,
+    height: 53,
+    borderRadius: 26.5,
+    marginBottom: 7,
+    borderWidth: 2,
+    borderColor: "#c7e4ff",
+    backgroundColor: "#f1f7fe",
+  },
+  travelerBadgeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    marginBottom: 2,
+  },
+  travelerFlag: {
+    fontSize: 17,
+    marginRight: 4,
+  },
+  travelerName: {
+    fontWeight: "700",
+    color: "#23427d",
+    fontSize: 15,
+  },
+  travelerStatus: {
+    fontSize: 12,
+    color: "#3B82F6",
+    fontWeight: "700",
+    marginBottom: 4,
+    marginTop: 1,
+  },
+  travelerInterests: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: 3,
+    marginBottom: 2,
+  },
+  travelerInterestPill: {
+    backgroundColor: "#f1f7fe",
+    borderRadius: 9,
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    marginHorizontal: 1.5,
+    marginBottom: 2,
+  },
+  travelerInterestTxt: {
+    color: "#3B82F6",
+    fontWeight: "700",
+    fontSize: 11.5,
+  },
+  travelerMutuals: {
+    marginTop: 4,
+    fontSize: 11,
+    color: "#60A5FA",
+    fontWeight: "600",
+  },
+
+  // MEETUP CARDS
+  meetupCard: {
+    width: 175,
+    backgroundColor: "#fff",
+    borderRadius: 21,
+    marginRight: 5,
+    marginBottom: 8,
+    shadowColor: "#72b2fa",
+    shadowOpacity: 0.07,
+    shadowRadius: 11,
+    shadowOffset: { width: 0, height: 3 },
+    overflow: "hidden",
+  },
+  meetupImg: {
+    width: "100%",
+    height: 73,
+    borderTopLeftRadius: 21,
+    borderTopRightRadius: 21,
+    backgroundColor: "#eaf5fe",
+  },
+  meetupInfo: {
+    padding: 10,
+    paddingBottom: 4,
+  },
+  meetupTitle: {
+    color: "#22325e",
+    fontWeight: "900",
+    fontSize: 15,
+    marginBottom: 2,
+  },
+  meetupTime: {
+    color: "#3B82F6",
+    fontWeight: "700",
+    fontSize: 12.5,
+    marginBottom: 1,
+  },
+  meetupLoc: {
+    color: "#a1b9d6",
+    fontSize: 11.5,
+    marginTop: 1,
+  },
+  meetupJoinedRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    paddingHorizontal: 10,
+    paddingBottom: 7,
+  },
+  meetupJoinedTxt: {
+    color: "#3B82F6",
+    fontWeight: "700",
+    fontSize: 12,
+  },
+
+  // SHOUTOUTS
+  shoutoutCard: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    backgroundColor: "#fff",
+    borderRadius: 19,
+    padding: 11,
+    marginBottom: 10,
+    shadowColor: "#83b3f3",
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+  },
+  shoutoutAvatar: {
+    width: 35,
+    height: 35,
+    borderRadius: 17.5,
+    marginRight: 10,
+    backgroundColor: "#f1f7fe",
+    borderWidth: 1.3,
+    borderColor: "#c7e4ff",
+  },
+  shoutoutContent: { flex: 1 },
+  shoutoutMsg: { color: "#22325e", fontSize: 14, marginBottom: 4 },
+  shoutoutMetaRow: { flexDirection: "row", alignItems: "center", gap: 16 },
+  shoutoutTime: { color: "#60A5FA", fontSize: 11.5, fontWeight: "700" },
+  shoutoutReplies: { color: "#a6b2cf", fontSize: 11.5, fontWeight: "500" },
+  shoutoutReplyBtn: {
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 8,
+    backgroundColor: "#e7f0fa",
+    marginLeft: 6,
+  },
+  shoutoutReplyBtnTxt: {
+    color: "#3B82F6",
+    fontWeight: "700",
+    fontSize: 12,
+  },
+
+  // FAB
   fab: {
     position: "absolute",
-    right: 23,
+    right: 28,
     bottom: 35,
-    elevation: 7,
+    shadowColor: "#3B82F6",
+    shadowOpacity: 0.13,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 8,
     zIndex: 99,
-    shadowColor: "#234",
-    shadowOpacity: 0.23,
-    shadowRadius: 8,
-    shadowOffset: { width: 1, height: 2 },
   },
   fabGrad: {
-    borderRadius: 34,
-    width: 62,
-    height: 62,
+    borderRadius: 30,
+    width: 60,
+    height: 60,
     alignItems: "center",
     justifyContent: "center",
   },
