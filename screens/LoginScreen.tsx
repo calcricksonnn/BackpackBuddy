@@ -26,10 +26,10 @@ export const LoginScreen: React.FC = () => {
 
   return (
     <ImageBackground
-  source={{ uri: 'https://imgur.com/a/pSdxWRL' }}
+  source={require('../../../assets/onboarding/bg2.png')}
   style={styles.bg}
   resizeMode="cover"
->
+/>
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
