@@ -1,24 +1,15 @@
-// store/authStore.ts
 import { create } from 'zustand';
 
-type UserProfile = {
-  uid: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  username: string;
-};
-
 type AuthState = {
-  user: UserProfile | null;
+  userId: string | null;
   isAuthenticated: boolean;
-  setUser: (user: UserProfile) => void;
+  setUser: (uid: string) => void;
   signOut: () => void;
 };
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
+  userId: null,
   isAuthenticated: false,
-  setUser: (user) => set({ user, isAuthenticated: true }),
-  signOut: () => set({ user: null, isAuthenticated: false }),
+  setUser: (uid) => set({ userId: uid, isAuthenticated: true }),
+  signOut: () => set({ userId: null, isAuthenticated: false }),
 }));
