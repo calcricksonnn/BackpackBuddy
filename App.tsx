@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from './firebase/firebase'; // adjust path as needed
+import { auth } from './firebase/firebase';
 import { useAuthStore } from './store/authStore';
-import AppStack from './navigation/AppStack'; // screens for logged-in users
-import AuthStack from './navigation/AuthStack'; // Login/Register screens
+import AppStack from './navigation/AppStack';
+import AuthStack from './navigation/AuthStack';
 import LoadingScreen from './screens/LoadingScreen';
 
 export default function App() {
@@ -27,9 +26,5 @@ export default function App() {
 
   if (checkingAuth) return <LoadingScreen />;
 
-  return (
-    <NavigationContainer>
-      {isAuthenticated ? <AppStack /> : <AuthStack />}
-    </NavigationContainer>
-  );
+  return isAuthenticated ? <AppStack /> : <AuthStack />;
 }
