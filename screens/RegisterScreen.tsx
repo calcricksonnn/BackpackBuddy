@@ -38,11 +38,12 @@ export const RegisterScreen: React.FC = () => {
   };
 
   return (
-    <ImageBackground
-      source={require('../assets/onboarding/bg3.png')}
-      style={styles.bg}
-      resizeMode="cover"
-    >
+    <>
+      <ImageBackground
+        source={require('../assets/onboarding/bg3.png')}
+        style={styles.bg}
+        resizeMode="cover"
+      />
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -114,12 +115,12 @@ export const RegisterScreen: React.FC = () => {
           </BlurView>
         </ScrollView>
       </KeyboardAvoidingView>
-    </ImageBackground>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  bg: { flex: 1 },
+  bg: { flex: 1, position: 'absolute', width: '100%', height: '100%' },
   container: { flex: 1, justifyContent: 'center' },
   scroll: { alignItems: 'center', paddingVertical: 60 },
   card: {
