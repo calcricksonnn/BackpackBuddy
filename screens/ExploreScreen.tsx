@@ -3,214 +3,188 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Image,
   FlatList,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  Dimensions,
+  SafeAreaView,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
+import { Ionicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+
+const { width } = Dimensions.get('window');
 
 const mockTravelers = [
-  {
-    id: '1',
-    name: 'Emma',
-    country: '🇨🇦',
-    city: 'Lisbon',
-    image: 'https://randomuser.me/api/portraits/women/44.jpg',
-  },
-  {
-    id: '2',
-    name: 'Luca',
-    country: '🇮🇹',
-    city: 'Lisbon',
-    image: 'https://randomuser.me/api/portraits/men/22.jpg',
-  },
-  {
-    id: '3',
-    name: 'Aisha',
-    country: '🇲🇾',
-    city: 'Lisbon',
-    image: 'https://randomuser.me/api/portraits/women/65.jpg',
-  },
-];
-
-const mockMeetups = [
-  {
-    id: 'm1',
-    title: 'Sunset hike 🌄',
-    location: 'Sintra Hills',
-    time: 'Today @ 5:30pm',
-  },
-  {
-    id: 'm2',
-    title: 'Hostel Tapas Night',
-    location: 'Sant Jordi Hostel',
-    time: 'Tonight @ 8:00pm',
-  },
+  { id: '1', name: 'Sophie', avatar: 'https://randomuser.me/api/portraits/women/44.jpg', location: 'Bali' },
+  { id: '2', name: 'James', avatar: 'https://randomuser.me/api/portraits/men/52.jpg', location: 'Lisbon' },
+  { id: '3', name: 'Anya', avatar: 'https://randomuser.me/api/portraits/women/68.jpg', location: 'Tokyo' },
 ];
 
 const ExploreScreen = () => {
+  const navigation = useNavigation();
+
   return (
-    <LinearGradient colors={['#1e3c72', '#2a5298']} style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scroll}>
-        <Text style={styles.heading}>Hey traveler 👋</Text>
-        <Text style={styles.subheading}>You’re in Lisbon 🇵🇹</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView showsVerticalScrollIndicator={false}>
 
-        {/* Interest Tags */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tags}>
-          {['Hiking', 'Food', 'Nightlife', 'Culture', 'Chill'].map((tag) => (
-            <TouchableOpacity key={tag} style={styles.tag}>
-              <Text style={styles.tagText}>#{tag}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.greeting}>👋 Welcome back, Explorer</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Inbox')}>
+            <Feather name="mail" size={24} color="#333" />
+          </TouchableOpacity>
+        </View>
 
-        {/* Nearby Travelers */}
-        <Text style={styles.sectionTitle}>Nearby Travelers</Text>
-        <FlatList
-          horizontal
-          data={mockTravelers}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.travelerCard}>
-              <Image source={{ uri: item.image }} style={styles.avatar} />
-              <Text style={styles.travelerName}>{item.name}</Text>
-              <Text style={styles.travelerLocation}>{item.city} {item.country}</Text>
-            </View>
-          )}
-          showsHorizontalScrollIndicator={false}
-        />
+        {/* Travelers Nearby */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Travelers Nearby</Text>
+          <FlatList
+            data={mockTravelers}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <View style={styles.userCard}>
+                <Image source={{ uri: item.avatar }} style={styles.avatar} />
+                <Text style={styles.userName}>{item.name}</Text>
+                <Text style={styles.userLocation}>{item.location}</Text>
+              </View>
+            )}
+          />
+        </View>
 
-        {/* Upcoming Meetups */}
-        <Text style={styles.sectionTitle}>Meetups Near You</Text>
-        {mockMeetups.map((m) => (
-          <View key={m.id} style={styles.meetupCard}>
-            <View style={styles.meetupIcon}>
-              <MaterialIcons name="event" size={22} color="#fff" />
-            </View>
-            <View style={styles.meetupText}>
-              <Text style={styles.meetupTitle}>{m.title}</Text>
-              <Text style={styles.meetupSubtitle}>{m.location} • {m.time}</Text>
+        {/* Discover Actions */}
+        <View style={styles.actionsRow}>
+          <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('Map')}>
+            <Ionicons name="map" size={28} color="#007AFF" />
+            <Text style={styles.actionText}>Map</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('Meetups')}>
+            <MaterialCommunityIcons name="calendar-star" size={28} color="#FF6B6B" />
+            <Text style={styles.actionText}>Meetups</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('Profile')}>
+            <Ionicons name="person-circle-outline" size={28} color="#333" />
+            <Text style={styles.actionText}>Profile</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Inspiration Feed */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Inspiration</Text>
+          <View style={styles.postCard}>
+            <Image
+              source={{ uri: 'https://images.unsplash.com/photo-1558981403-c5f989215542' }}
+              style={styles.postImage}
+            />
+            <View style={styles.postContent}>
+              <Text style={styles.postText}>Sunrise hike in Chiang Mai 🇹🇭</Text>
+              <Text style={styles.postAuthor}>@wanderwithsophie</Text>
             </View>
           </View>
-        ))}
-
-        {/* Mini Story Prompt */}
-        <TouchableOpacity style={styles.storyPrompt}>
-          <FontAwesome5 name="pen" size={14} color="#555" />
-          <Text style={styles.storyPromptText}>Share a quick story from your trip...</Text>
-        </TouchableOpacity>
+        </View>
       </ScrollView>
-    </LinearGradient>
+    </SafeAreaView>
   );
 };
 
 export default ExploreScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  scroll: {
-    paddingTop: 80,
-    paddingHorizontal: 20,
-    paddingBottom: 40,
+  container: {
+    flex: 1,
+    backgroundColor: '#FAFAFA',
   },
-  heading: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#fff',
-  },
-  subheading: {
-    fontSize: 16,
-    color: '#eee',
-    marginBottom: 16,
-  },
-  tags: {
-    marginVertical: 14,
+  header: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 20,
+    alignItems: 'center',
   },
-  tag: {
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginRight: 10,
-    borderWidth: 1,
-    borderColor: '#fff',
-  },
-  tagText: {
-    color: '#fff',
-    fontSize: 13,
+  greeting: {
+    fontSize: 20,
     fontWeight: '600',
+    color: '#333',
+  },
+  section: {
+    marginBottom: 24,
+    paddingHorizontal: 20,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#fff',
-    marginTop: 20,
-    marginBottom: 8,
+    marginBottom: 12,
+    color: '#333',
   },
-  travelerCard: {
-    width: 100,
+  userCard: {
     alignItems: 'center',
     marginRight: 16,
+    width: 80,
   },
   avatar: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     marginBottom: 6,
   },
-  travelerName: {
-    color: '#fff',
+  userName: {
+    fontSize: 13,
     fontWeight: '600',
-    fontSize: 14,
+    color: '#444',
   },
-  travelerLocation: {
-    color: '#ccc',
+  userLocation: {
     fontSize: 12,
+    color: '#888',
   },
-  meetupCard: {
+  actionsRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 12,
+    justifyContent: 'space-around',
+    marginBottom: 28,
+    paddingHorizontal: 10,
   },
-  meetupIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#007AFF',
+  actionCard: {
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 14,
+    width: width / 3.5,
+    height: 100,
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
   },
-  meetupText: {
-    flex: 1,
+  actionText: {
+    marginTop: 8,
+    fontSize: 13,
+    color: '#333',
+    fontWeight: '500',
   },
-  meetupTitle: {
+  postCard: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    overflow: 'hidden',
+    elevation: 2,
+  },
+  postImage: {
+    width: '100%',
+    height: 180,
+  },
+  postContent: {
+    padding: 14,
+  },
+  postText: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#fff',
+    color: '#333',
+    marginBottom: 6,
   },
-  meetupSubtitle: {
+  postAuthor: {
     fontSize: 13,
-    color: '#ccc',
-    marginTop: 2,
-  },
-  storyPrompt: {
-    marginTop: 30,
-    padding: 14,
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    borderRadius: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  storyPromptText: {
-    color: '#ccc',
-    marginLeft: 10,
-    fontSize: 14,
+    color: '#777',
   },
 });
