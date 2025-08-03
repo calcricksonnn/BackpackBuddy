@@ -1,13 +1,28 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
+// firebase/auth.ts
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { auth } from './firebase';
+import { db } from './firestore';
 
-const firebaseConfig = {
-  apiKey: 
+export const register = async (
+  email: string,
+  password: string,
+  fullName: string,
+  username: string
+) => {
+  const [firstName, lastName = ''] = fullName.split(' ');
 
-const app = initializeApp(firebaseConfig);
+  const userCred = await createUserWithEmailAndPassword(auth, email, password);
+  const uid = userCred.user.uid;
 
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
+  await setDoc(doc(db, 'users', uid), {
+    uid,
+    email,
+    firstName,
+    lastName,
+    username,
+    createdAt: serverTimestamp(),
+  });
+
+  return uid;
+};
