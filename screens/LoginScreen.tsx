@@ -26,10 +26,10 @@ export const LoginScreen: React.FC = () => {
 
   return (
     <ImageBackground
-  source={require('../../../assets/onboarding/bg2.png')}
-  style={styles.bg}
-  resizeMode="cover"
-/>
+      source={require('../../../assets/onboarding/bg2.png')}
+      style={styles.bg}
+      resizeMode="cover"
+    >
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -58,17 +58,15 @@ export const LoginScreen: React.FC = () => {
             />
 
             <TouchableOpacity onPress={handleLogin}>
-              <LinearGradient
-                colors={['#007AFF', '#005BB5']}
-                style={styles.button}
-              >
+              <LinearGradient colors={['#007AFF', '#005BB5']} style={styles.button}>
                 <Text style={styles.buttonText}>Log In</Text>
               </LinearGradient>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => navigation.navigate('Register')}>
               <Text style={styles.link}>
-                Don’t have an account? <Text style={styles.linkHighlight}>Sign up</Text>
+                Don’t have an account?{' '}
+                <Text style={styles.linkHighlight}>Sign up</Text>
               </Text>
             </TouchableOpacity>
           </BlurView>
@@ -97,13 +95,13 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
     marginBottom: 16,
     fontSize: 16,
-    color: '#111'
+    color: '#111',
   },
   button: {
     marginTop: 16,
     paddingVertical: 14,
     borderRadius: 8,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   buttonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
   link: { marginTop: 16, fontSize: 14, color: '#ddd' },
