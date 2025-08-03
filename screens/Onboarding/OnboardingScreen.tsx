@@ -14,17 +14,17 @@ const { width, height } = Dimensions.get('window');
 
 const slides = [
   {
-    bg: require('../../../assets/onboarding/bg1.png'),
+    bg: require('../../assets/onboarding/bg1.png'),
     title: 'Meet Travelers Nearby',
     subtitle: 'Connect with fellow backpackers and solo explorers near you.',
   },
   {
-    bg: require('../../../assets/onboarding/bg2.png'),
+    bg: require('../../assets/onboarding/bg2.png'),
     title: 'Map Your Journey',
     subtitle: 'Pin, track, and share your adventures visually across the world.',
   },
   {
-    bg: require('../../../assets/onboarding/bg3.png'),
+    bg: require('../../assets/onboarding/bg3.png'),
     title: 'Travel Safer, Together',
     subtitle: 'Verified users, privacy control, and community-driven safety tools.',
   },
