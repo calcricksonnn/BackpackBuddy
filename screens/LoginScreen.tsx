@@ -1,4 +1,3 @@
-// Same imports as before
 import React, { useState } from 'react';
 import {
   View,
@@ -11,6 +10,8 @@ import {
   Platform,
   ScrollView,
   StatusBar,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as Animatable from 'react-native-animatable';
@@ -18,10 +19,15 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts, Poppins_700Bold, Poppins_400Regular } from '@expo-google-fonts/poppins';
 import AppLoading from 'expo-app-loading';
 
+import { login } from '../firebase/auth';
+import { useAuthStore } from '../store/authStore';
+
 export const LoginScreen: React.FC = () => {
   const navigation = useNavigation();
+  const setUser = useAuthStore((state) => state.setUser);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   let [fontsLoaded] = useFonts({
     Poppins_700Bold,
@@ -30,14 +36,27 @@ export const LoginScreen: React.FC = () => {
 
   if (!fontsLoaded) return <AppLoading />;
 
-  const handleLogin = () => {
-    console.log('Login:', { email, password });
-    // TODO: Firebase or Supabase login
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Missing fields', 'Please enter email and password');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const user = await login(email, password);
+      setUser(user); // Zustand store update
+      navigation.reset({ index: 0, routes: [{ name: 'Explore' }] });
+    } catch (err: any) {
+      Alert.alert('Login failed', err.message || 'Please try again');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <ImageBackground
-      source={require('../assets/onboarding/bg2.png')}
+      source={{ uri: 'https://your-link.com/bg2.jpg' }} // optional: use local file or URL
       style={styles.background}
       resizeMode="cover"
     >
@@ -74,12 +93,16 @@ export const LoginScreen: React.FC = () => {
               secureTextEntry
             />
 
-            <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
+            <TouchableOpacity onPress={handleLogin} style={styles.loginButton} disabled={loading}>
               <LinearGradient
                 colors={['#007AFF', '#005BB5']}
                 style={styles.loginGradient}
               >
-                <Text style={styles.loginText}>Log In</Text>
+                {loading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.loginText}>Log In</Text>
+                )}
               </LinearGradient>
             </TouchableOpacity>
 
@@ -96,12 +119,8 @@ export const LoginScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-  },
-  background: {
-    flex: 1,
-  },
+  flex: { flex: 1 },
+  background: { flex: 1 },
   scroll: {
     flexGrow: 1,
     justifyContent: 'center',
