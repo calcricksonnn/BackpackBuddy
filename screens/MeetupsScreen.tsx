@@ -3,7 +3,7 @@ import { View, Text, FlatList, StyleSheet, Modal, Pressable, TextInput } from 'r
 import { useMeetups } from '../hooks/useMeetups';
 import { EventCard } from '../components/EventCard';
 
-export const MeetupsScreen: React.FC = () => {
+const MeetupsScreen: React.FC = () => {
   const { meetups, addMeetup, isLoading, error } = useMeetups();
   const [modalVisible, setModalVisible] = useState(false);
   const [newTitle, setNewTitle] = useState('');
@@ -78,19 +78,19 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   addText: { fontSize: 28, color: '#fff' },
   modalBackdrop: {
     flex: 1,
     justifyContent: 'center',
     backgroundColor: 'rgba(0,0,0,0.5)',
-    padding: 24
+    padding: 24,
   },
   modalContent: {
     backgroundColor: '#fff',
     padding: 20,
-    borderRadius: 8
+    borderRadius: 8,
   },
   modalTitle: { fontSize: 18, fontWeight: '600', marginBottom: 12 },
   input: {
@@ -98,13 +98,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 12,
     borderRadius: 6,
-    marginBottom: 12
+    marginBottom: 12,
   },
   modalButton: {
     backgroundColor: '#000',
     padding: 12,
     borderRadius: 6,
-    alignItems: 'center'
+    alignItems: 'center',
   },
-  cancelButton: { marginTop: 12, alignItems: 'center' }
+  cancelButton: { marginTop: 12, alignItems: 'center' },
 });
+
+export default MeetupsScreen;
