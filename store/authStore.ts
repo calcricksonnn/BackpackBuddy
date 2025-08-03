@@ -1,15 +1,17 @@
+// store/authStore.ts
+import { User } from 'firebase/auth';
 import { create } from 'zustand';
 
 type AuthState = {
-  userId: string | null;
+  user: User | null;
   isAuthenticated: boolean;
-  signIn: (uid: string) => void;
+  setUser: (user: User) => void;
   signOut: () => void;
 };
 
 export const useAuthStore = create<AuthState>((set) => ({
-  userId: null,
+  user: null,
   isAuthenticated: false,
-  signIn: (uid) => set({ userId: uid, isAuthenticated: true }),
-  signOut: () => set({ userId: null, isAuthenticated: false })
+  setUser: (user) => set({ user, isAuthenticated: true }),
+  signOut: () => set({ user: null, isAuthenticated: false }),
 }));
