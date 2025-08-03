@@ -12,43 +12,30 @@ import {
   StatusBar,
   Platform,
 } from 'react-native';
-import { Ionicons, Feather } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
-
 const { width } = Dimensions.get('window');
 
-const mockTravelers = [
-  { id: '1', name: 'Sophie', avatar: 'https://randomuser.me/api/portraits/women/44.jpg', location: 'Bali' },
-  { id: '2', name: 'James', avatar: 'https://randomuser.me/api/portraits/men/52.jpg', location: 'Lisbon' },
-  { id: '3', name: 'Anya', avatar: 'https://randomuser.me/api/portraits/women/68.jpg', location: 'Tokyo' },
-  { id: '4', name: 'Carlos', avatar: 'https://randomuser.me/api/portraits/men/22.jpg', location: 'Perth' },
-  { id: '5', name: 'Lina', avatar: 'https://randomuser.me/api/portraits/women/12.jpg', location: 'Berlin' },
+// Mock data
+const activeTravelers = [
+  { id: '1', name: 'Sophie', avatar: 'https://randomuser.me/api/portraits/women/44.jpg', city: 'Bali', flag: '🇮🇩', active: true, distance: 1.2 },
+  { id: '2', name: 'James', avatar: 'https://randomuser.me/api/portraits/men/52.jpg', city: 'Lisbon', flag: '🇵🇹', active: true, distance: 3.6 },
+  { id: '3', name: 'Anya', avatar: 'https://randomuser.me/api/portraits/women/68.jpg', city: 'Tokyo', flag: '🇯🇵', active: false, distance: 7.8 },
+  { id: '4', name: 'Carlos', avatar: 'https://randomuser.me/api/portraits/men/22.jpg', city: 'Perth', flag: '🇦🇺', active: true, distance: 2.4 },
+  { id: '5', name: 'Lina', avatar: 'https://randomuser.me/api/portraits/women/12.jpg', city: 'Berlin', flag: '🇩🇪', active: true, distance: 0.8 },
 ];
-
-const mockInspiration = [
-  {
-    id: '1',
-    img: 'https://images.unsplash.com/photo-1558981403-c5f989215542?auto=format&fit=crop&w=800&q=80',
-    text: 'Sunrise hike in Chiang Mai 🇹🇭',
-    author: '@wanderwithsophie',
-  },
-  {
-    id: '2',
-    img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
-    text: 'Surf vibes, Bali mornings 🌊',
-    author: '@nomadjames',
-  },
-  {
-    id: '3',
-    img: 'https://images.unsplash.com/photo-1465101162946-4377e57745c3?auto=format&fit=crop&w=800&q=80',
-    text: 'Tokyo nights with new friends 🗼',
-    author: '@anyawanders',
-  },
+const meetups = [
+  { id: '1', title: 'Beach BBQ & Sunset', when: 'Tonight, 6pm', where: 'Jurien Bay', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80', joined: 8 },
+  { id: '2', title: 'Pub Crawl', when: 'Today, 8pm', where: 'Cervantes Tavern', img: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=900&q=80', joined: 14 },
+  { id: '3', title: 'Sandboarding Trip', when: 'Tomorrow, 9am', where: 'Lancelin Dunes', img: 'https://images.unsplash.com/photo-1558981403-c5f989215542?auto=format&fit=crop&w=800&q=80', joined: 5 },
 ];
-
-const userAvatar =
-  'https://randomuser.me/api/portraits/men/3.jpg'; // mock current user pic
+const notices = [
+  { id: '1', author: 'Anya', avatar: 'https://randomuser.me/api/portraits/women/68.jpg', msg: 'Anyone keen for sunrise hiking tomorrow?', time: '13m', replies: 2 },
+  { id: '2', author: 'James', avatar: 'https://randomuser.me/api/portraits/men/52.jpg', msg: 'Looking for ride shares north!', time: '1h', replies: 4 },
+  { id: '3', author: 'Sophie', avatar: 'https://randomuser.me/api/portraits/women/44.jpg', msg: 'Party tonight? Who’s in?', time: '10m', replies: 8 },
+];
+const myAvatar = 'https://randomuser.me/api/portraits/men/3.jpg';
 
 const ExploreScreen = () => {
   const navigation = useNavigation();
@@ -56,268 +43,206 @@ const ExploreScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle={Platform.OS === 'ios' ? 'dark-content' : 'light-content'} />
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 60 }}>
 
-        {/* Header */}
-        <View style={styles.headerRow}>
-          <View>
-            <Text style={styles.greetingBig}>Hey, Cal 👋</Text>
-            <Text style={styles.greetingSmall}>Where will you explore today?</Text>
+        {/* HERO */}
+        <View style={styles.heroWrap}>
+          <Image source={{ uri: 'https://images.unsplash.com/photo-1465101162946-4377e57745c3?auto=format&fit=crop&w=900&q=80' }} style={styles.heroImg} blurRadius={2.2} />
+          <LinearGradient colors={['#0000', '#16181db7']} style={styles.heroOverlay} />
+          <View style={styles.heroContent}>
+            <Text style={styles.heroGreet}>Welcome back, Cal!</Text>
+            <Text style={styles.heroLocation}><Ionicons name="location-outline" size={16} color="#fff" /> Cervantes, WA</Text>
           </View>
-          <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-            <Image source={{ uri: userAvatar }} style={styles.myAvatar} />
+          <TouchableOpacity style={styles.heroInbox} onPress={() => navigation.navigate('Inbox')}>
+            <MaterialIcons name="mail-outline" size={25} color="#fff" />
+            <View style={styles.unreadBadge}><Text style={styles.unreadBadgeText}>3</Text></View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.heroAvatarWrap} onPress={() => navigation.navigate('Profile')}>
+            <Image source={{ uri: myAvatar }} style={styles.heroAvatar} />
           </TouchableOpacity>
         </View>
 
-        {/* Travelers Nearby */}
+        {/* ACTIVE TRAVELERS */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Travelers Nearby</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Travelers Nearby</Text>
+            <TouchableOpacity><Text style={styles.seeAllBtn}>See all</Text></TouchableOpacity>
+          </View>
           <FlatList
-            data={mockTravelers}
-            keyExtractor={(item) => item.id}
+            data={activeTravelers}
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingLeft: 2, paddingBottom: 6 }}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={{ paddingLeft: 4, paddingBottom: 8 }}
             renderItem={({ item }) => (
-              <TouchableOpacity style={styles.userCard}>
-                <LinearGradient
-                  colors={['#fafafaCC', '#eef2f3CC']}
-                  style={styles.avatarBg}
-                >
-                  <Image source={{ uri: item.avatar }} style={styles.avatar} />
-                </LinearGradient>
-                <Text style={styles.userName}>{item.name}</Text>
-                <View style={styles.locationRow}>
-                  <Ionicons name="location-outline" size={13} color="#a2a2a2" style={{ marginRight: 2 }} />
-                  <Text style={styles.userLocation}>{item.location}</Text>
+              <View style={styles.travelerCard}>
+                <Image source={{ uri: item.avatar }} style={styles.travelerAvatar} />
+                <View style={item.active ? styles.activeDot : styles.awayDot} />
+                <Text style={styles.travelerName}>{item.name}</Text>
+                <View style={styles.travelerSubRow}>
+                  <Text style={styles.travelerFlag}>{item.flag}</Text>
+                  <Text style={styles.travelerDist}>{item.distance}km</Text>
+                </View>
+                <TouchableOpacity style={styles.waveBtn}><Text style={styles.waveBtnText}>👋 Wave</Text></TouchableOpacity>
+              </View>
+            )}
+          />
+        </View>
+
+        {/* MEETUPS & EVENTS */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Meetups & Events</Text>
+            <TouchableOpacity><Text style={styles.seeAllBtn}>See all</Text></TouchableOpacity>
+          </View>
+          <FlatList
+            data={meetups}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={{ paddingLeft: 4 }}
+            renderItem={({ item }) => (
+              <TouchableOpacity style={styles.meetupCard}>
+                <Image source={{ uri: item.img }} style={styles.meetupImg} />
+                <View style={styles.meetupOverlay} />
+                <View style={styles.meetupContent}>
+                  <Text style={styles.meetupTitle}>{item.title}</Text>
+                  <Text style={styles.meetupMeta}>{item.when} • {item.where}</Text>
+                  <View style={styles.meetupRow}>
+                    <Ionicons name="people" size={14} color="#fff" />
+                    <Text style={styles.meetupJoined}>{item.joined} Going</Text>
+                  </View>
+                  <TouchableOpacity style={styles.joinBtn}><Text style={styles.joinBtnText}>Join</Text></TouchableOpacity>
                 </View>
               </TouchableOpacity>
             )}
           />
         </View>
 
-        {/* Discover Actions */}
-        <View style={styles.actionsRow}>
-          <ActionButton
-            icon="map-outline"
-            label="Route"
-            gradient={['#6EE7B7', '#3B82F6']}
-            onPress={() => navigation.navigate('Journey')}
-          />
-          <ActionButton
-            icon="calendar-outline"
-            label="Meetups"
-            gradient={['#FDE68A', '#FCA5A5']}
-            onPress={() => navigation.navigate('Meetups')}
-          />
-          <ActionButton
-            icon="chatbubble-ellipses-outline"
-            label="Inbox"
-            gradient={['#D8B4FE', '#818CF8']}
-            onPress={() => navigation.navigate('Inbox')}
-          />
-        </View>
-
-        {/* Inspiration Feed */}
-        <View style={[styles.section, { marginTop: 4 }]}>
-          <Text style={styles.sectionTitle}>Inspiration</Text>
-          <FlatList
-            data={mockInspiration}
-            keyExtractor={(item) => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            snapToInterval={width * 0.74 + 22}
-            decelerationRate="fast"
-            contentContainerStyle={{ paddingLeft: 2, paddingBottom: 14 }}
-            renderItem={({ item }) => (
-              <TouchableOpacity activeOpacity={0.93} style={styles.postCard}>
-                <Image source={{ uri: item.img }} style={styles.postImage} />
-                <LinearGradient
-                  colors={['#00000040', '#000000C0']}
-                  style={styles.gradientOverlay}
-                />
-                <View style={styles.postContent}>
-                  <Text style={styles.postText}>{item.text}</Text>
-                  <Text style={styles.postAuthor}>{item.author}</Text>
+        {/* NOTICEBOARD */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Noticeboard</Text>
+            <TouchableOpacity><Text style={styles.seeAllBtn}>New post</Text></TouchableOpacity>
+          </View>
+          {notices.map((item) => (
+            <View style={styles.noticeCard} key={item.id}>
+              <Image source={{ uri: item.avatar }} style={styles.noticeAvatar} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.noticeMsg}><Text style={{ fontWeight: '700', color: '#3B82F6' }}>{item.author}</Text> {item.msg}</Text>
+                <View style={styles.noticeMeta}>
+                  <Text style={styles.noticeTime}>{item.time} ago</Text>
+                  <Text style={styles.noticeReply}>{item.replies} replies</Text>
                 </View>
-              </TouchableOpacity>
-            )}
-          />
+              </View>
+              <TouchableOpacity style={styles.replyBtn}><Text style={styles.replyBtnText}>Reply</Text></TouchableOpacity>
+            </View>
+          ))}
         </View>
       </ScrollView>
+
+      {/* POST BUTTON */}
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => navigation.navigate('CreatePost')}
+        activeOpacity={0.85}
+      >
+        <LinearGradient colors={['#3B82F6', '#818CF8']} style={styles.fabGrad}>
+          <Ionicons name="add" size={32} color="#fff" />
+        </LinearGradient>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
 
-const ActionButton = ({ icon, label, gradient, onPress }: any) => (
-  <TouchableOpacity activeOpacity={0.86} onPress={onPress} style={styles.actionCardWrap}>
-    <LinearGradient colors={gradient} style={styles.actionCard}>
-      <Ionicons name={icon} size={28} color="#fff" />
-      <Text style={styles.actionText}>{label}</Text>
-    </LinearGradient>
-  </TouchableOpacity>
-);
-
 export default ExploreScreen;
 
+// --- STYLES ---
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f4f6fb',
+  container: { flex: 1, backgroundColor: '#f6f8fb' },
+
+  // HERO
+  heroWrap: { height: 120, borderBottomLeftRadius: 36, borderBottomRightRadius: 36, overflow: 'hidden', marginBottom: 10, position: 'relative' },
+  heroImg: { width: '100%', height: '100%', position: 'absolute' },
+  heroOverlay: { ...StyleSheet.absoluteFillObject, borderBottomLeftRadius: 36, borderBottomRightRadius: 36 },
+  heroContent: { position: 'absolute', left: 22, bottom: 18, zIndex: 3 },
+  heroGreet: { color: '#fff', fontSize: 18, fontWeight: '700', letterSpacing: 0.1, marginBottom: 2 },
+  heroLocation: { color: '#e2e9f7', fontSize: 14, fontWeight: '500', letterSpacing: 0.1 },
+  heroInbox: { position: 'absolute', top: 17, right: 80, zIndex: 10, backgroundColor: '#2227', borderRadius: 18, padding: 5 },
+  unreadBadge: { position: 'absolute', top: -4, right: -5, backgroundColor: '#FF6B6B', borderRadius: 8, minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center' },
+  unreadBadgeText: { color: '#fff', fontWeight: '700', fontSize: 10, paddingHorizontal: 2 },
+  heroAvatarWrap: { position: 'absolute', top: 14, right: 22, zIndex: 11, borderRadius: 25, overflow: 'hidden', borderColor: '#fff', borderWidth: 2 },
+  heroAvatar: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#c9dbfc' },
+
+  // SECTION
+  section: { marginBottom: 22, paddingHorizontal: 16 },
+  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 },
+  sectionTitle: { fontSize: 17, fontWeight: '700', color: '#232e38' },
+  seeAllBtn: { fontSize: 13, fontWeight: '600', color: '#6A86F7' },
+
+  // TRAVELER CARDS
+  travelerCard: { backgroundColor: '#fff', borderRadius: 18, alignItems: 'center', marginRight: 12, width: 98, shadowColor: '#2229', shadowOpacity: 0.13, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 3, paddingTop: 14, paddingBottom: 10, position: 'relative', marginTop: 6 },
+  travelerAvatar: { width: 54, height: 54, borderRadius: 27, marginBottom: 5, borderWidth: 2, borderColor: '#e0e7ef' },
+  activeDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#4ADE80', position: 'absolute', top: 16, right: 13, borderWidth: 1.2, borderColor: '#fff' },
+  awayDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#bdbdbd', position: 'absolute', top: 16, right: 13, borderWidth: 1.2, borderColor: '#fff' },
+  travelerName: { fontSize: 15, fontWeight: '700', color: '#222d3d', marginTop: 1 },
+  travelerSubRow: { flexDirection: 'row', alignItems: 'center', marginTop: 2 },
+  travelerFlag: { fontSize: 14, marginRight: 5 },
+  travelerDist: { fontSize: 11, color: '#6b7280', fontWeight: '500' },
+  waveBtn: { marginTop: 7, backgroundColor: '#e6eeff', borderRadius: 8, paddingVertical: 4, paddingHorizontal: 12 },
+  waveBtnText: { color: '#3B82F6', fontWeight: '700', fontSize: 13 },
+
+  // MEETUPS
+  meetupCard: { backgroundColor: '#fff', borderRadius: 22, width: width * 0.7, marginRight: 18, elevation: 5, shadowColor: '#3a387a60', shadowOpacity: 0.13, shadowRadius: 10, shadowOffset: { width: 0, height: 5 }, overflow: 'hidden', position: 'relative', marginTop: 6, },
+  meetupImg: { width: '100%', height: 110 },
+  meetupOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: '#18192540', },
+  meetupContent: { position: 'absolute', bottom: 10, left: 0, right: 0, padding: 15, zIndex: 2 },
+  meetupTitle: { color: '#fff', fontSize: 16, fontWeight: '800', marginBottom: 3, textShadowColor: '#0008', textShadowRadius: 5, },
+  meetupMeta: { color: '#e7eaf3', fontSize: 13, marginBottom: 6 },
+  meetupRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 7 },
+  meetupJoined: { color: '#fff', marginLeft: 5, fontWeight: '700', fontSize: 13 },
+  joinBtn: { alignSelf: 'flex-start', backgroundColor: '#6A86F7', borderRadius: 8, paddingVertical: 4, paddingHorizontal: 15, marginTop: 2 },
+  joinBtnText: { color: '#fff', fontWeight: '800', fontSize: 14 },
+
+  // NOTICEBOARD
+  noticeCard: { flexDirection: 'row', alignItems: 'flex-start', backgroundColor: '#fff', borderRadius: 14, marginBottom: 11, padding: 12, shadowColor: '#3336', shadowOpacity: 0.09, shadowRadius: 5, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
+  noticeAvatar: { width: 36, height: 36, borderRadius: 18, marginRight: 11, marginTop: 2 },
+  noticeMsg: { fontSize: 14.5, color: '#2a3240', marginBottom: 5 },
+  noticeMeta: { flexDirection: 'row', gap: 8 },
+  noticeTime: { color: '#818cf8', fontSize: 12, fontWeight: '700', marginRight: 8 },
+  noticeReply: { color: '#aaa', fontSize: 12, fontWeight: '700' },
+  replyBtn: {
+    marginLeft: 10,
+    alignSelf: 'center',
+    backgroundColor: '#E0E7FF',
+    borderRadius: 8,
+    paddingVertical: 5,
+    paddingHorizontal: 14,
   },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 22,
-    paddingTop: 16,
-    marginBottom: 4,
-  },
-  greetingBig: {
-    fontSize: 26,
+  replyBtnText: {
+    color: '#3B82F6',
     fontWeight: '700',
-    color: '#232e38',
-    letterSpacing: -0.5,
+    fontSize: 13,
   },
-  greetingSmall: {
-    fontSize: 15,
-    color: '#8898a9',
-    marginTop: 1,
-    fontWeight: '500',
+
+  // FAB (Floating Action Button)
+  fab: {
+    position: 'absolute',
+    bottom: 26,
+    right: 22,
+    zIndex: 100,
+    shadowColor: '#3B82F6',
+    shadowOpacity: 0.23,
+    shadowOffset: { width: 0, height: 6 },
+    shadowRadius: 18,
+    elevation: 10,
   },
-  myAvatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    borderColor: '#e3e6ee',
-    borderWidth: 2,
-  },
-  section: {
-    marginBottom: 26,
-    paddingHorizontal: 20,
-  },
-  sectionTitle: {
-    fontSize: 19,
-    fontWeight: '700',
-    marginBottom: 10,
-    color: '#242b35',
-    letterSpacing: -0.5,
-  },
-  userCard: {
-    backgroundColor: '#fff',
-    borderRadius: 19,
-    alignItems: 'center',
-    marginRight: 16,
-    width: 94,
-    shadowColor: '#2228',
-    shadowOpacity: 0.15,
-    shadowRadius: 9,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 4,
-    paddingTop: 14,
-    paddingBottom: 10,
-  },
-  avatarBg: {
-    borderRadius: 36,
-    padding: 3,
-    marginBottom: 5,
-  },
-  avatar: {
+  fabGrad: {
+    borderRadius: 35,
     width: 62,
     height: 62,
-    borderRadius: 31,
-    borderWidth: 1.5,
-    borderColor: '#e8eaed',
-    backgroundColor: '#f2f2f4',
-  },
-  userName: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#2f2e41',
-    marginTop: 1,
-  },
-  locationRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 2,
-  },
-  userLocation: {
-    fontSize: 12,
-    color: '#8898a9',
-    fontWeight: '500',
-    letterSpacing: -0.2,
-  },
-  actionsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginHorizontal: 18,
-    marginBottom: 16,
-    marginTop: 3,
-  },
-  actionCardWrap: {
-    flex: 1,
-    marginHorizontal: 4,
-  },
-  actionCard: {
-    borderRadius: 17,
     alignItems: 'center',
     justifyContent: 'center',
-    height: 88,
-    shadowColor: '#000',
-    shadowOpacity: 0.10,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 5 },
-    elevation: 5,
-  },
-  actionText: {
-    marginTop: 7,
-    fontSize: 14,
-    color: '#fff',
-    fontWeight: '600',
-    letterSpacing: -0.2,
-  },
-  postCard: {
-    backgroundColor: '#fff',
-    borderRadius: 22,
-    width: width * 0.74,
-    marginRight: 22,
-    elevation: 6,
-    shadowColor: '#3337',
-    shadowOpacity: 0.13,
-    shadowRadius: 14,
-    shadowOffset: { width: 0, height: 7 },
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  postImage: {
-    width: '100%',
-    height: 180,
-    borderTopLeftRadius: 22,
-    borderTopRightRadius: 22,
-  },
-  gradientOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    height: 180,
-    borderTopLeftRadius: 22,
-    borderTopRightRadius: 22,
-  },
-  postContent: {
-    padding: 15,
-  },
-  postText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#f7fafc',
-    marginBottom: 4,
-    textShadowColor: '#0006',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 6,
-  },
-  postAuthor: {
-    fontSize: 13,
-    color: '#fafafa',
-    textShadowColor: '#0006',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
   },
 });
