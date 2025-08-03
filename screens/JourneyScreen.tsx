@@ -1,11 +1,20 @@
 import React, { useState } from 'react';
-import { FlatList, View, Text, StyleSheet, Modal, TextInput, Pressable, ActivityIndicator } from 'react-native';
+import {
+  FlatList,
+  View,
+  Text,
+  StyleSheet,
+  Modal,
+  TextInput,
+  Pressable,
+  ActivityIndicator,
+} from 'react-native';
 import MapView, { Polyline, Marker } from 'react-native-maps';
 import { useJourneys } from '../hooks/useJourneys';
 import { useJourneyMap } from '../hooks/useJourneyMap';
 import { TripCard } from '../components/TripCard';
 
-export const JourneyScreen: React.FC = () => {
+const JourneyScreen: React.FC = () => {
   const { journeys, addJourney, isLoading, error } = useJourneys();
   const { coords, initialRegion } = useJourneyMap(journeys);
   const [modalVisible, setModalVisible] = useState(false);
@@ -68,48 +77,4 @@ export const JourneyScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: '#fff' },
-  heading: { fontSize: 24, fontWeight: '600', marginBottom: 12 },
-  error: { color: 'red' },
-  map: { height: 200, borderRadius: 12, marginBottom: 16 },
-  addButton: {
-    position: 'absolute',
-    right: 20,
-    bottom: 32,
-    backgroundColor: '#000',
-    borderRadius: 28,
-    padding: 12,
-    width: 56,
-    height: 56,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  addText: { fontSize: 28, color: '#fff' },
-  modalBackdrop: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    padding: 24
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 8
-  },
-  modalTitle: { fontSize: 18, fontWeight: '600', marginBottom: 12 },
-  input: {
-    borderColor: '#ccc',
-    borderWidth: 1,
-    padding: 12,
-    borderRadius: 6,
-    marginBottom: 12
-  },
-  modalButton: {
-    backgroundColor: '#000',
-    padding: 12,
-    borderRadius: 6,
-    alignItems: 'center'
-  },
-  cancelButton: { marginTop: 12, alignItems: 'center' }
-});
+export default JourneyScreen; // ✅ Add this line
