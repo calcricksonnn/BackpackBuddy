@@ -40,7 +40,7 @@ export const RegisterScreen: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    if (!form.email || !form.password || !form.firstName || !form.lastName) {
+    if (!form.email || !form.password || !form.firstName || !form.lastName || !form.username) {
       Alert.alert('Missing fields', 'Please complete all fields');
       return;
     }
@@ -52,8 +52,13 @@ export const RegisterScreen: React.FC = () => {
 
     try {
       setLoading(true);
-      const user = await register(form.email, form.password, `${form.firstName} ${form.lastName}`);
-      setUser(user); // save to Zustand
+      const user = await register(
+        form.email,
+        form.password,
+        `${form.firstName} ${form.lastName}`,
+        form.username
+      );
+      setUser(user);
       navigation.reset({ index: 0, routes: [{ name: 'Explore' }] });
     } catch (err: any) {
       Alert.alert('Registration failed', err.message);
@@ -71,7 +76,7 @@ export const RegisterScreen: React.FC = () => {
 
   return (
     <ImageBackground
-      source={{ uri: 'https://your-link.com/bg3.jpg' }} // replace if needed
+      source={{ uri: 'https://your-link.com/bg3.jpg' }}
       style={styles.background}
       resizeMode="cover"
     >
@@ -89,25 +94,27 @@ export const RegisterScreen: React.FC = () => {
           <Animatable.View animation="fadeInUp" delay={200} style={styles.card}>
             <Text style={styles.heading}>Create Account 🧭</Text>
 
-            {['firstName', 'lastName', 'username', 'email', 'password', 'confirmPassword'].map((field) => (
-              <TextInput
-                key={field}
-                placeholder={field
-                  .replace('firstName', 'First Name')
-                  .replace('lastName', 'Last Name')
-                  .replace('confirmPassword', 'Confirm Password')
-                  .replace('password', 'Password')
-                  .replace('username', 'Username')
-                  .replace('email', 'Email')}
-                placeholderTextColor="#eee"
-                style={styles.input}
-                value={form[field as keyof typeof form]}
-                onChangeText={(v) => handleChange(field, v)}
-                secureTextEntry={field.includes('password')}
-                autoCapitalize={field === 'email' ? 'none' : undefined}
-                keyboardType={field === 'email' ? 'email-address' : 'default'}
-              />
-            ))}
+            {['firstName', 'lastName', 'username', 'email', 'password', 'confirmPassword'].map(
+              (field) => (
+                <TextInput
+                  key={field}
+                  placeholder={field
+                    .replace('firstName', 'First Name')
+                    .replace('lastName', 'Last Name')
+                    .replace('confirmPassword', 'Confirm Password')
+                    .replace('password', 'Password')
+                    .replace('username', 'Username')
+                    .replace('email', 'Email')}
+                  placeholderTextColor="#eee"
+                  style={styles.input}
+                  value={form[field as keyof typeof form]}
+                  onChangeText={(v) => handleChange(field, v)}
+                  secureTextEntry={field.includes('password')}
+                  autoCapitalize={field === 'email' ? 'none' : undefined}
+                  keyboardType={field === 'email' ? 'email-address' : 'default'}
+                />
+              )
+            )}
 
             <TouchableOpacity onPress={handleSubmit} style={styles.registerButton} disabled={loading}>
               <LinearGradient colors={['#007AFF', '#005BB5']} style={styles.registerGradient}>
