@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  ImageBackground,
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-} from 'react-native';
+import { ImageBackground, View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Swiper from 'react-native-swiper';
 
@@ -36,16 +29,18 @@ export const OnboardingScreen: React.FC = () => {
   return (
     <Swiper loop={false} dotColor="#ccc" activeDotColor="#007AFF">
       {slides.map((slide, index) => (
-        <ImageBackground key={index} source={slide.bg} style={styles.slide} resizeMode="cover">
+        <ImageBackground
+          key={index}
+          source={slide.bg}
+          style={styles.slide}
+          resizeMode="cover"
+        >
           <View style={styles.overlay}>
             <View style={styles.card}>
               <Text style={styles.title}>{slide.title}</Text>
               <Text style={styles.subtitle}>{slide.subtitle}</Text>
               {index === slides.length - 1 && (
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={() => navigation.replace('Login')}
-                >
+                <TouchableOpacity style={styles.button} onPress={() => navigation.replace('Login')}>
                   <Text style={styles.buttonText}>Get Started</Text>
                 </TouchableOpacity>
               )}
@@ -62,10 +57,12 @@ const styles = StyleSheet.create({
     width,
     height,
     justifyContent: 'flex-end',
+    alignItems: 'center',
   },
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.35)',
+    width: '100%',
+    backgroundColor: 'rgba(0,0,0,0.3)',
     justifyContent: 'flex-end',
     paddingBottom: 60,
   },
