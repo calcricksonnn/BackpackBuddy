@@ -1,15 +1,24 @@
 import { create } from 'zustand';
 
+type User = {
+  uid: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  createdAt?: any;
+};
+
 type AuthState = {
-  userId: string | null;
+  user: User | null;
   isAuthenticated: boolean;
-  setUser: (uid: string) => void;
+  setUser: (user: User) => void;
   signOut: () => void;
 };
 
 export const useAuthStore = create<AuthState>((set) => ({
-  userId: null,
+  user: null,
   isAuthenticated: false,
-  setUser: (uid) => set({ userId: uid, isAuthenticated: true }),
-  signOut: () => set({ userId: null, isAuthenticated: false }),
+  setUser: (user) => set({ user, isAuthenticated: true }),
+  signOut: () => set({ user: null, isAuthenticated: false }),
 }));
