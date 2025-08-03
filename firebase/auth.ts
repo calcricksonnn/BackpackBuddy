@@ -4,13 +4,7 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAxUycd_saBQgknRucniBhcSiGIh5eKzSg",
-  authDomain: "backpackbuddy-d4569.firebaseapp.com",
-  projectId: "backpackbuddy-d4569",
-  storageBucket: "backpackbuddy-d4569.firebasestorage.app",
-  messagingSenderId: "240634133130",
-  appId: "1:240634133130:web:bab2d039160932a44b4b73"
-};
+  apiKey: 
 
 const app = initializeApp(firebaseConfig);
 
