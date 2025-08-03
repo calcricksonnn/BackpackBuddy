@@ -18,7 +18,82 @@ import { useNavigation } from "@react-navigation/native";
 
 const { width } = Dimensions.get("window");
 
-// ... (keep your mock data here: heroImage, activeTravelers, meetups, notices, etc.)
+const heroImage =
+  "https://images.unsplash.com/photo-1465101162946-4377e57745c3?auto=format&fit=crop&w=900&q=80";
+
+const activeTravelers = [
+  {
+    id: "1",
+    name: "Sophie",
+    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+    status: "active",
+    badge: "Hostel legend",
+  },
+  {
+    id: "2",
+    name: "James",
+    avatar: "https://randomuser.me/api/portraits/men/52.jpg",
+    status: "just_arrived",
+    badge: "Just arrived",
+  },
+  {
+    id: "3",
+    name: "Anya",
+    avatar: "https://randomuser.me/api/portraits/women/68.jpg",
+    status: "first_timer",
+    badge: "First timer",
+  },
+];
+
+const meetups = [
+  {
+    id: "1",
+    title: "Beach BBQ",
+    when: "Tonight 6pm",
+    where: "Jurien Bay",
+    img: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+    joinedAvatars: [
+      "https://randomuser.me/api/portraits/women/44.jpg",
+      "https://randomuser.me/api/portraits/men/52.jpg",
+      "https://randomuser.me/api/portraits/women/68.jpg",
+    ],
+    hot: true,
+  },
+  {
+    id: "2",
+    title: "Pub Crawl",
+    when: "Tonight 8pm",
+    where: "Cervantes Tavern",
+    img: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=900&q=80",
+    joinedAvatars: [
+      "https://randomuser.me/api/portraits/men/52.jpg",
+      "https://randomuser.me/api/portraits/women/44.jpg",
+      "https://randomuser.me/api/portraits/women/68.jpg",
+    ],
+    hot: false,
+  },
+];
+
+const notices = [
+  {
+    id: "1",
+    author: "Anya",
+    avatar: "https://randomuser.me/api/portraits/women/68.jpg",
+    msg: "Anyone keen for sunrise hiking tomorrow?",
+    time: "13m",
+    replies: 2,
+  },
+  {
+    id: "2",
+    author: "James",
+    avatar: "https://randomuser.me/api/portraits/men/52.jpg",
+    msg: "Looking for ride shares north!",
+    time: "1h",
+    replies: 4,
+  },
+];
+
+const myAvatar = "https://randomuser.me/api/portraits/men/3.jpg";
 
 // statusColors (for story ring status)
 const statusColors = {
