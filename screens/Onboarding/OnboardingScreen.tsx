@@ -13,25 +13,29 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Animatable from 'react-native-animatable';
 import { useNavigation } from '@react-navigation/native';
 import { useFonts, Poppins_700Bold, Poppins_400Regular } from '@expo-google-fonts/poppins';
-import AppLoading from 'expo-app-loading';
+
+// ✅ Import images statically to avoid black screen issues
+import bg1 from '../../assets/onboarding/bg1.png';
+import bg2 from '../../assets/onboarding/bg2.png';
+import bg3 from '../../assets/onboarding/bg3.png';
 
 const { width, height } = Dimensions.get('window');
 
 const slides = [
   {
-    bg: require('../../assets/onboarding/bg1.png'),
+    bg: bg1,
     icon: '🌍',
     title: 'Meet Travelers Nearby',
     subtitle: 'Connect with backpackers and explorers around you.',
   },
   {
-    bg: require('../../assets/onboarding/bg2.png'),
+    bg: bg2,
     icon: '🗺️',
     title: 'Map Your Journey',
     subtitle: 'Visualize, pin, and share your adventure as you go.',
   },
   {
-    bg: require('../../assets/onboarding/bg3.png'),
+    bg: bg3,
     icon: '🛡️',
     title: 'Travel Safer, Together',
     subtitle: 'Verified users. Safety features. Trusted community.',
@@ -41,12 +45,13 @@ const slides = [
 export const OnboardingScreen: React.FC = () => {
   const navigation = useNavigation();
 
-  let [fontsLoaded] = useFonts({
+  const [fontsLoaded] = useFonts({
     Poppins_700Bold,
     Poppins_400Regular,
   });
 
-  if (!fontsLoaded) return <AppLoading />;
+  // ✅ Prevent crash while fonts load
+  if (!fontsLoaded) return null;
 
   return (
     <View style={styles.wrapper}>
@@ -69,27 +74,15 @@ export const OnboardingScreen: React.FC = () => {
             />
 
             <View style={styles.content}>
-              <Animatable.Text
-                animation="fadeInDown"
-                delay={100}
-                style={styles.icon}
-              >
+              <Animatable.Text animation="fadeInDown" delay={100} style={styles.icon}>
                 {slide.icon}
               </Animatable.Text>
 
-              <Animatable.Text
-                animation="fadeInUp"
-                delay={300}
-                style={styles.title}
-              >
+              <Animatable.Text animation="fadeInUp" delay={300} style={styles.title}>
                 {slide.title}
               </Animatable.Text>
 
-              <Animatable.Text
-                animation="fadeInUp"
-                delay={500}
-                style={styles.subtitle}
-              >
+              <Animatable.Text animation="fadeInUp" delay={500} style={styles.subtitle}>
                 {slide.subtitle}
               </Animatable.Text>
 
