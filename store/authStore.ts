@@ -1,3 +1,4 @@
+// store/authStore.ts
 import { create } from 'zustand';
 
 type UserProfile = {
@@ -11,13 +12,13 @@ type UserProfile = {
 type AuthState = {
   user: UserProfile | null;
   isAuthenticated: boolean;
-  setUser: (profile: UserProfile) => void;
+  setUser: (user: UserProfile) => void;
   signOut: () => void;
 };
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isAuthenticated: false,
-  setUser: (profile) => set({ user: profile, isAuthenticated: true }),
+  setUser: (user) => set({ user, isAuthenticated: true }),
   signOut: () => set({ user: null, isAuthenticated: false }),
 }));
