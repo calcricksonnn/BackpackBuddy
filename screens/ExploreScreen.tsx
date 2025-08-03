@@ -27,7 +27,6 @@ const ExploreScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.greeting}>👋 Welcome back, Explorer</Text>
@@ -56,20 +55,9 @@ const ExploreScreen = () => {
 
         {/* Discover Actions */}
         <View style={styles.actionsRow}>
-          <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('Map')}>
-            <Ionicons name="map" size={28} color="#007AFF" />
-            <Text style={styles.actionText}>Map</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('Meetups')}>
-            <MaterialCommunityIcons name="calendar-star" size={28} color="#FF6B6B" />
-            <Text style={styles.actionText}>Meetups</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('Profile')}>
-            <Ionicons name="person-circle-outline" size={28} color="#333" />
-            <Text style={styles.actionText}>Profile</Text>
-          </TouchableOpacity>
+          <ActionButton icon="walk-outline" color="#007AFF" label="Journey" onPress={() => navigation.navigate('Journey')} />
+          <ActionButton icon="calendar-outline" color="#FF6B6B" label="Meetups" onPress={() => navigation.navigate('Meetups')} />
+          <ActionButton icon="person-circle-outline" color="#444" label="Profile" onPress={() => navigation.navigate('Profile')} />
         </View>
 
         {/* Inspiration Feed */}
@@ -91,13 +79,17 @@ const ExploreScreen = () => {
   );
 };
 
+const ActionButton = ({ icon, label, color, onPress }: any) => (
+  <TouchableOpacity style={styles.actionCard} onPress={onPress}>
+    <Ionicons name={icon} size={28} color={color} />
+    <Text style={styles.actionText}>{label}</Text>
+  </TouchableOpacity>
+);
+
 export default ExploreScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FAFAFA',
-  },
+  container: { flex: 1, backgroundColor: '#FAFAFA' },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
