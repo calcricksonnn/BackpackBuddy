@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
 import ExploreScreen from '../screens/ExploreScreen';
-import JourneyScreen from '../screens/JourneyScreen';
+import JourneyScreen from '../screens/JourneyScreen'; // ✅ This is your actual screen
 import MeetupsScreen from '../screens/MeetupsScreen';
 import InboxScreen from '../screens/InboxScreen';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -26,11 +26,11 @@ const BottomTabNavigator = () => {
           fontSize: 12,
           marginBottom: 2,
         },
-        tabBarIcon: ({ color, size }) => {
+        tabBarIcon: ({ color }) => {
           let iconName: any;
 
           if (route.name === 'Explore') iconName = 'compass-outline';
-          else if (route.name === 'Map') iconName = 'map-outline';
+          else if (route.name === 'Journey') iconName = 'walk-outline'; // ✅ Updated from map to journey icon
           else if (route.name === 'Meetups') iconName = 'calendar-outline';
           else if (route.name === 'Inbox') iconName = 'chatbubble-ellipses-outline';
           else if (route.name === 'Profile') iconName = 'person-circle-outline';
@@ -42,7 +42,7 @@ const BottomTabNavigator = () => {
       })}
     >
       <Tab.Screen name="Explore" component={ExploreScreen} />
-      <Tab.Screen name="Map" component={MapScreen} />
+      <Tab.Screen name="Journey" component={JourneyScreen} /> {/* ✅ Renamed from Map to Journey */}
       <Tab.Screen name="Meetups" component={MeetupsScreen} />
       <Tab.Screen name="Inbox" component={InboxScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
