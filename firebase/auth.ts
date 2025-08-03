@@ -1,5 +1,4 @@
-// firebase/auth.ts
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { auth } from './firebase';
 import { db } from './firestore';
@@ -15,29 +14,24 @@ export const register = async (
   const userCred = await createUserWithEmailAndPassword(auth, email, password);
   const uid = userCred.user.uid;
 
-  const profile = {
+  await setDoc(doc(db, 'users', uid), {
     uid,
     email,
     firstName,
     lastName,
     username,
     createdAt: serverTimestamp(),
-  };
+  });
 
-  await setDoc(doc(db, 'users', uid), profile);
-  return profile;
+  return uid;
 };
 
 export const login = async (email: string, password: string) => {
   const userCred = await signInWithEmailAndPassword(auth, email, password);
   const uid = userCred.user.uid;
 
-  const docRef = doc(db, 'users', uid);
-  const snapshot = await getDoc(docRef);
+  const userDoc = await getDoc(doc(db, 'users', uid));
+  if (!userDoc.exists()) throw new Error('User not found');
 
-  if (!snapshot.exists()) {
-    throw new Error('User profile not found.');
-  }
-
-  return snapshot.data();
+  return uid;
 };
