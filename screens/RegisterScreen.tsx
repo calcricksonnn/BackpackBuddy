@@ -11,15 +11,21 @@ import {
   ScrollView,
   StatusBar,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as Animatable from 'react-native-animatable';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts, Poppins_700Bold, Poppins_400Regular } from '@expo-google-fonts/poppins';
 import AppLoading from 'expo-app-loading';
+import { register } from '../firebase/auth';
+import { useAuthStore } from '../store/authStore';
 
 export const RegisterScreen: React.FC = () => {
   const navigation = useNavigation();
+  const setUser = useAuthStore((state) => state.setUser);
+  const [loading, setLoading] = useState(false);
+
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
@@ -33,14 +39,27 @@ export const RegisterScreen: React.FC = () => {
     setForm({ ...form, [key]: val });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (!form.email || !form.password || !form.firstName || !form.lastName) {
+      Alert.alert('Missing fields', 'Please complete all fields');
+      return;
+    }
+
     if (form.password !== form.confirmPassword) {
       Alert.alert('Oops!', 'Passwords do not match');
       return;
     }
 
-    console.log('Register:', form);
-    // TODO: Send form data to backend
+    try {
+      setLoading(true);
+      const user = await register(form.email, form.password, `${form.firstName} ${form.lastName}`);
+      setUser(user); // save to Zustand
+      navigation.reset({ index: 0, routes: [{ name: 'Explore' }] });
+    } catch (err: any) {
+      Alert.alert('Registration failed', err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   let [fontsLoaded] = useFonts({
@@ -52,7 +71,7 @@ export const RegisterScreen: React.FC = () => {
 
   return (
     <ImageBackground
-      source={require('../assets/onboarding/bg3.png')}
+      source={{ uri: 'https://your-link.com/bg3.jpg' }} // replace if needed
       style={styles.background}
       resizeMode="cover"
     >
@@ -70,72 +89,39 @@ export const RegisterScreen: React.FC = () => {
           <Animatable.View animation="fadeInUp" delay={200} style={styles.card}>
             <Text style={styles.heading}>Create Account 🧭</Text>
 
-            <TextInput
-              placeholder="First Name"
-              placeholderTextColor="#eee"
-              style={styles.input}
-              value={form.firstName}
-              onChangeText={(v) => handleChange('firstName', v)}
-            />
+            {['firstName', 'lastName', 'username', 'email', 'password', 'confirmPassword'].map((field) => (
+              <TextInput
+                key={field}
+                placeholder={field
+                  .replace('firstName', 'First Name')
+                  .replace('lastName', 'Last Name')
+                  .replace('confirmPassword', 'Confirm Password')
+                  .replace('password', 'Password')
+                  .replace('username', 'Username')
+                  .replace('email', 'Email')}
+                placeholderTextColor="#eee"
+                style={styles.input}
+                value={form[field as keyof typeof form]}
+                onChangeText={(v) => handleChange(field, v)}
+                secureTextEntry={field.includes('password')}
+                autoCapitalize={field === 'email' ? 'none' : undefined}
+                keyboardType={field === 'email' ? 'email-address' : 'default'}
+              />
+            ))}
 
-            <TextInput
-              placeholder="Last Name"
-              placeholderTextColor="#eee"
-              style={styles.input}
-              value={form.lastName}
-              onChangeText={(v) => handleChange('lastName', v)}
-            />
-
-            <TextInput
-              placeholder="Username"
-              placeholderTextColor="#eee"
-              style={styles.input}
-              value={form.username}
-              onChangeText={(v) => handleChange('username', v)}
-              autoCapitalize="none"
-            />
-
-            <TextInput
-              placeholder="Email"
-              placeholderTextColor="#eee"
-              style={styles.input}
-              value={form.email}
-              onChangeText={(v) => handleChange('email', v)}
-              autoCapitalize="none"
-              keyboardType="email-address"
-            />
-
-            <TextInput
-              placeholder="Password"
-              placeholderTextColor="#eee"
-              style={styles.input}
-              value={form.password}
-              onChangeText={(v) => handleChange('password', v)}
-              secureTextEntry
-            />
-
-            <TextInput
-              placeholder="Confirm Password"
-              placeholderTextColor="#eee"
-              style={styles.input}
-              value={form.confirmPassword}
-              onChangeText={(v) => handleChange('confirmPassword', v)}
-              secureTextEntry
-            />
-
-            <TouchableOpacity onPress={handleSubmit} style={styles.registerButton}>
-              <LinearGradient
-                colors={['#007AFF', '#005BB5']}
-                style={styles.registerGradient}
-              >
-                <Text style={styles.registerText}>Create Account</Text>
+            <TouchableOpacity onPress={handleSubmit} style={styles.registerButton} disabled={loading}>
+              <LinearGradient colors={['#007AFF', '#005BB5']} style={styles.registerGradient}>
+                {loading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.registerText}>Create Account</Text>
+                )}
               </LinearGradient>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => navigation.navigate('Login')}>
               <Text style={styles.link}>
-                Already have an account?{' '}
-                <Text style={styles.linkHighlight}>Log in</Text>
+                Already have an account? <Text style={styles.linkHighlight}>Log in</Text>
               </Text>
             </TouchableOpacity>
           </Animatable.View>
@@ -146,12 +132,8 @@ export const RegisterScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-  },
-  background: {
-    flex: 1,
-  },
+  flex: { flex: 1 },
+  background: { flex: 1 },
   scroll: {
     flexGrow: 1,
     justifyContent: 'center',
