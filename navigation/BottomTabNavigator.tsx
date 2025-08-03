@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons, Feather } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 
 import ExploreScreen from '../screens/ExploreScreen';
 import MapScreen from '../screens/JourneyScreen';
@@ -19,10 +19,12 @@ const BottomTabNavigator = () => {
           backgroundColor: '#fff',
           borderTopColor: '#eee',
           height: 65,
+          paddingBottom: 10,
         },
+        tabBarHideOnKeyboard: true,
         tabBarLabelStyle: {
           fontSize: 12,
-          marginBottom: 5,
+          marginBottom: 2,
         },
         tabBarIcon: ({ color, size }) => {
           let iconName: any;
