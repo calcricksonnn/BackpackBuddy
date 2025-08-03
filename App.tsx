@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase/firebase';
 import { useAuthStore } from './store/authStore';
@@ -26,5 +27,9 @@ export default function App() {
 
   if (checkingAuth) return <LoadingScreen />;
 
-  return isAuthenticated ? <AppStack /> : <AuthStack />;
+  return (
+    <NavigationContainer>
+      {isAuthenticated ? <AppStack /> : <AuthStack />}
+    </NavigationContainer>
+  );
 }
