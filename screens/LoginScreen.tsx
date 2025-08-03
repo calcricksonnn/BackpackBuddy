@@ -45,7 +45,7 @@ export const LoginScreen: React.FC = () => {
     try {
       setLoading(true);
       const user = await login(email, password);
-      setUser(user); // Zustand store update
+      setUser(user); // user contains uid, email, firstName, lastName, username
       navigation.reset({ index: 0, routes: [{ name: 'Explore' }] });
     } catch (err: any) {
       Alert.alert('Login failed', err.message || 'Please try again');
@@ -56,7 +56,7 @@ export const LoginScreen: React.FC = () => {
 
   return (
     <ImageBackground
-      source={{ uri: 'https://your-link.com/bg2.jpg' }} // optional: use local file or URL
+      source={{ uri: 'https://your-link.com/bg2.jpg' }}
       style={styles.background}
       resizeMode="cover"
     >
@@ -94,10 +94,7 @@ export const LoginScreen: React.FC = () => {
             />
 
             <TouchableOpacity onPress={handleLogin} style={styles.loginButton} disabled={loading}>
-              <LinearGradient
-                colors={['#007AFF', '#005BB5']}
-                style={styles.loginGradient}
-              >
+              <LinearGradient colors={['#007AFF', '#005BB5']} style={styles.loginGradient}>
                 {loading ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
