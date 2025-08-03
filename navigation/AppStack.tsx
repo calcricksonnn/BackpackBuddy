@@ -1,20 +1,17 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import LoginScreen from '../screens/LoginScreen';
-import RegisterScreen from '../screens/RegisterScreen';
-import ExploreScreen from '../screens/ExploreScreen'; // Placeholder
+
+import ExploreScreen from '../screens/ExploreScreen';
 
 const Stack = createNativeStackNavigator();
 
-const AppStack = () => (
-  <NavigationContainer>
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Register" component={RegisterScreen} />
-      <Stack.Screen name="Explore" component={ExploreScreen} />
-    </Stack.Navigator>
-  </NavigationContainer>
-);
-
-export default AppStack;
+export default function AppStack() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Explore" component={ExploreScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
