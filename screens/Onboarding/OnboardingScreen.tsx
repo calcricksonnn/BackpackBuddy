@@ -14,7 +14,6 @@ import * as Animatable from 'react-native-animatable';
 import { useNavigation } from '@react-navigation/native';
 import { useFonts, Poppins_700Bold, Poppins_400Regular } from '@expo-google-fonts/poppins';
 import AppLoading from 'expo-app-loading';
-import { BlurView } from 'expo-blur';
 
 const { width, height } = Dimensions.get('window');
 
@@ -66,7 +65,7 @@ export const OnboardingScreen: React.FC = () => {
           >
             <LinearGradient
               colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.85)']}
-              style={StyleSheet.absoluteFill}
+              style={styles.gradient}
             />
 
             <View style={styles.content}>
@@ -121,6 +120,9 @@ const styles = StyleSheet.create({
     width,
     height,
     justifyContent: 'flex-end',
+  },
+  gradient: {
+    ...StyleSheet.absoluteFillObject,
   },
   content: {
     alignItems: 'center',
