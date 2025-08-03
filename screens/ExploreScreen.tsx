@@ -587,4 +587,24 @@ const styles = StyleSheet.create({
     borderColor: "#fff",
     borderWidth: 1.3,
     backgroundColor: "#eee",
+  }, // <--- COMMA!
+
+  eventJoinTxt: {
+    color: "#f1f5fa",
+    marginLeft: 8,
+    fontWeight: "700",
+    fontSize: 14,
+    textShadowColor: "#0007",
+    textShadowRadius: 6,
   },
+  // ...and so on, all the way through to:
+  fabGrad: {
+    borderRadius: 34,
+    width: 62,
+    height: 62,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+}); 
+
+export default ExploreScreen;
