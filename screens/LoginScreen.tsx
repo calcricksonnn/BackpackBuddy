@@ -9,20 +9,14 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Dimensions,
+  StatusBar,
 } from 'react-native';
-import { BlurView } from 'expo-blur';
-import { LinearGradient } from 'expo-linear-gradient';
-import * as Animatable from 'react-native-animatable';
 import { useNavigation } from '@react-navigation/native';
-import {
-  useFonts,
-  Poppins_700Bold,
-  Poppins_400Regular,
-} from '@expo-google-fonts/poppins';
+import * as Animatable from 'react-native-animatable';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
+import { useFonts, Poppins_700Bold, Poppins_400Regular } from '@expo-google-fonts/poppins';
 import AppLoading from 'expo-app-loading';
-
-const { width, height } = Dimensions.get('window');
 
 export const LoginScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -38,79 +32,63 @@ export const LoginScreen: React.FC = () => {
 
   const handleLogin = () => {
     console.log('Login:', { email, password });
-    // TODO: Firebase or Supabase Auth
+    // TODO: Firebase or Supabase login
   };
 
   return (
     <ImageBackground
       source={require('../assets/onboarding/bg2.png')}
-      style={styles.bg}
+      style={styles.background}
       resizeMode="cover"
     >
       <LinearGradient
         colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0.8)']}
-        style={StyleSheet.absoluteFillObject}
+        style={StyleSheet.absoluteFill}
       />
+      <StatusBar translucent backgroundColor="transparent" />
+
       <KeyboardAvoidingView
-        style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.flex}
       >
-        <ScrollView
-          contentContainerStyle={styles.scroll}
-          keyboardShouldPersistTaps="handled"
-        >
-          <BlurView intensity={90} tint="light" style={styles.card}>
-            <Animatable.Text
-              animation="fadeInDown"
-              style={styles.heading}
-              delay={100}
-            >
-              Welcome Back
-            </Animatable.Text>
+        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+          <Animatable.View animation="fadeInUp" delay={200} style={styles.card}>
+            <Text style={styles.heading}>Welcome Back 👋</Text>
 
-            <Animatable.View animation="fadeInUp" delay={200} style={styles.field}>
-              <TextInput
-                placeholder="Email"
-                style={styles.input}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                placeholderTextColor="#666"
-                value={email}
-                onChangeText={setEmail}
-              />
-            </Animatable.View>
+            <TextInput
+              placeholder="Email"
+              placeholderTextColor="#aaa"
+              style={styles.input}
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+            />
 
-            <Animatable.View animation="fadeInUp" delay={300} style={styles.field}>
-              <TextInput
-                placeholder="Password"
-                style={styles.input}
-                secureTextEntry
-                placeholderTextColor="#666"
-                value={password}
-                onChangeText={setPassword}
-              />
-            </Animatable.View>
+            <TextInput
+              placeholder="Password"
+              placeholderTextColor="#aaa"
+              style={styles.input}
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
 
-            <Animatable.View animation="fadeInUp" delay={400}>
-              <TouchableOpacity onPress={handleLogin}>
-                <LinearGradient
-                  colors={['#007AFF', '#005BB5']}
-                  style={styles.button}
-                >
-                  <Text style={styles.buttonText}>Log In</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-            </Animatable.View>
+            <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
+              <LinearGradient
+                colors={['#007AFF', '#005BB5']}
+                style={styles.loginGradient}
+              >
+                <Text style={styles.loginText}>Log In</Text>
+              </LinearGradient>
+            </TouchableOpacity>
 
-            <Animatable.View animation="fadeInUp" delay={500}>
-              <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-                <Text style={styles.link}>
-                  Don’t have an account?{' '}
-                  <Text style={styles.linkHighlight}>Sign up</Text>
-                </Text>
-              </TouchableOpacity>
-            </Animatable.View>
-          </BlurView>
+            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+              <Text style={styles.link}>
+                Don’t have an account? <Text style={styles.linkHighlight}>Sign up</Text>
+              </Text>
+            </TouchableOpacity>
+          </Animatable.View>
         </ScrollView>
       </KeyboardAvoidingView>
     </ImageBackground>
@@ -118,65 +96,63 @@ export const LoginScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  bg: {
-    width,
-    height,
+  flex: {
     flex: 1,
   },
-  container: {
+  background: {
     flex: 1,
-    justifyContent: 'center',
   },
   scroll: {
-    alignItems: 'center',
-    paddingVertical: 80,
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+    paddingBottom: 60,
   },
   card: {
-    width: '90%',
+    backgroundColor: 'rgba(255,255,255,0.15)',
     borderRadius: 20,
-    padding: 28,
-    alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.8)',
+    padding: 24,
+    backdropFilter: 'blur(10px)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
   },
   heading: {
-    fontSize: 26,
+    fontSize: 28,
     fontFamily: 'Poppins_700Bold',
-    color: '#111',
+    color: '#fff',
     marginBottom: 24,
-  },
-  field: {
-    width: '100%',
-    marginBottom: 16,
+    textAlign: 'center',
   },
   input: {
-    width: '100%',
     height: 50,
-    borderBottomWidth: 1,
-    borderBottomColor: '#bbb',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    marginBottom: 16,
     fontSize: 16,
-    fontFamily: 'Poppins_400Regular',
-    color: '#111',
+    color: '#fff',
   },
-  button: {
-    marginTop: 12,
+  loginButton: {
+    marginTop: 8,
+  },
+  loginGradient: {
     paddingVertical: 14,
-    borderRadius: 10,
+    borderRadius: 12,
     alignItems: 'center',
-    width: 200,
   },
-  buttonText: {
+  loginText: {
     color: '#fff',
     fontSize: 16,
     fontFamily: 'Poppins_700Bold',
   },
   link: {
-    marginTop: 18,
-    fontSize: 14,
-    color: '#444',
+    marginTop: 16,
+    color: '#ccc',
+    textAlign: 'center',
     fontFamily: 'Poppins_400Regular',
   },
   linkHighlight: {
-    color: '#007AFF',
-    fontFamily: 'Poppins_700Bold',
+    color: '#fff',
+    fontWeight: '600',
   },
 });
