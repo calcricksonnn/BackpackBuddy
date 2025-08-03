@@ -14,12 +14,16 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { BlurView } from "expo-blur";
+import * as Animatable from "react-native-animatable";
 import { useNavigation } from "@react-navigation/native";
 
 const { width } = Dimensions.get("window");
 
+// ---- MOCK DATA ----
 const heroImage =
   "https://images.unsplash.com/photo-1465101162946-4377e57745c3?auto=format&fit=crop&w=900&q=80";
+const myAvatar = "https://randomuser.me/api/portraits/men/3.jpg";
 
 const activeTravelers = [
   {
@@ -93,15 +97,91 @@ const notices = [
   },
 ];
 
-const myAvatar = "https://randomuser.me/api/portraits/men/3.jpg";
-
-// statusColors (for story ring status)
 const statusColors = {
   active: "#4ADE80",
   just_arrived: "#3B82F6",
   first_timer: "#FACC15",
 };
+// ---- HERO HEADER COMPONENT ----
+const HeroHeader = ({
+  heroImage,
+  userAvatar,
+  unread,
+  onProfile,
+  onInbox,
+  hostelName,
+  checkedInCount,
+}) => (
+  <View style={styles.heroContainer}>
+    <Image source={{ uri: heroImage }} style={styles.heroImage} />
+    {/* Glass/Blur Overlay */}
+    <BlurView intensity={75} tint="dark" style={styles.heroBlur} />
+    {/* Gradient overlay */}
+    <LinearGradient
+      colors={["#00000088", "#222D50"]}
+      style={styles.heroGradient}
+    />
 
+    <View style={styles.heroTopRow}>
+      {/* Avatar with pulse animation */}
+      <TouchableOpacity onPress={onProfile} activeOpacity={0.8}>
+        <Animatable.View
+          animation="pulse"
+          iterationCount="infinite"
+          duration={1900}
+          style={styles.avatarPulse}
+        >
+          <Image source={{ uri: userAvatar }} style={styles.heroAvatar} />
+        </Animatable.View>
+      </TouchableOpacity>
+
+      {/* Inbox with glowing badge */}
+      <TouchableOpacity onPress={onInbox} activeOpacity={0.8}>
+        <Animatable.View
+          animation="fadeIn"
+          duration={900}
+          delay={600}
+          style={styles.inboxIconWrap}
+        >
+          <Ionicons name="chatbubble-ellipses-outline" size={28} color="#fff" />
+          {unread ? <View style={styles.inboxDotGlow} /> : null}
+        </Animatable.View>
+      </TouchableOpacity>
+    </View>
+
+    <View style={styles.heroContent}>
+      <Animatable.Text
+        animation="fadeInDown"
+        duration={1200}
+        style={styles.heroGreet}
+      >
+        Hey Cal,
+      </Animatable.Text>
+      <Animatable.Text
+        animation="fadeInDown"
+        delay={150}
+        duration={1200}
+        style={styles.heroTitle}
+      >
+        Welcome to {hostelName}
+      </Animatable.Text>
+      <Animatable.Text
+        animation="fadeInUp"
+        delay={250}
+        duration={1000}
+        style={styles.heroSub}
+      >
+        <Ionicons name="location" size={13} color="#fff" />{" "}
+        <Text style={{ fontWeight: "700", color: "#63ffb5" }}>
+          {checkedInCount} backpackers
+        </Text>{" "}
+        checked in nearby
+      </Animatable.Text>
+    </View>
+  </View>
+);
+
+// ---- MAIN SCREEN ----
 const ExploreScreen = () => {
   const navigation = useNavigation();
 
@@ -112,37 +192,15 @@ const ExploreScreen = () => {
       />
 
       {/* HERO HEADER */}
-      <View style={styles.heroContainer}>
-        <Image source={{ uri: heroImage }} style={styles.heroImage} />
-        <LinearGradient
-          colors={["#00000055", "#222D50"]}
-          style={styles.heroGradient}
-        />
-        <View style={styles.heroTopRow}>
-          <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-            <Image source={{ uri: myAvatar }} style={styles.heroAvatar} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate("Inbox")}>
-            <View style={styles.inboxBadgeWrap}>
-              <Ionicons
-                name="chatbubble-ellipses-outline"
-                size={26}
-                color="#fff"
-              />
-              <View style={styles.inboxDot} />
-            </View>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.heroContent}>
-          <Text style={styles.heroGreet}>Hey Cal,</Text>
-          <Text style={styles.heroTitle}>Welcome to Cervantes YHA</Text>
-          <Text style={styles.heroSub}>
-            <Ionicons name="location" size={13} color="#fff" />{" "}
-            <Text style={{ fontWeight: "600" }}>12 backpackers</Text> checked in
-            nearby
-          </Text>
-        </View>
-      </View>
+      <HeroHeader
+        heroImage={heroImage}
+        userAvatar={myAvatar}
+        unread={true}
+        onProfile={() => navigation.navigate("Profile")}
+        onInbox={() => navigation.navigate("Inbox")}
+        hostelName="Cervantes YHA"
+        checkedInCount={12}
+      />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -284,71 +342,115 @@ const ExploreScreen = () => {
   );
 };
 
+export default ExploreScreen;
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#141825" },
 
   // HERO HEADER
   heroContainer: {
-    width: "100%",
-    height: 185,
-    borderBottomLeftRadius: 40,
-    borderBottomRightRadius: 40,
-    overflow: "hidden",
-    position: "relative",
-    marginBottom: 8,
-    backgroundColor: "#19223b",
+    width: '100%',
+    height: 205,
+    borderBottomLeftRadius: 45,
+    borderBottomRightRadius: 45,
+    overflow: 'hidden',
+    position: 'relative',
+    backgroundColor: '#191c2a',
+    marginBottom: 9,
   },
-  heroImage: { width: "100%", height: "100%", position: "absolute" },
+  heroImage: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+  },
+  heroBlur: {
+    ...StyleSheet.absoluteFillObject,
+    borderBottomLeftRadius: 45,
+    borderBottomRightRadius: 45,
+  },
   heroGradient: {
     ...StyleSheet.absoluteFillObject,
-    borderBottomLeftRadius: 40,
-    borderBottomRightRadius: 40,
+    borderBottomLeftRadius: 45,
+    borderBottomRightRadius: 45,
   },
   heroTopRow: {
-    position: "absolute",
-    top: 18,
-    left: 20,
-    right: 20,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    zIndex: 2,
+    position: 'absolute',
+    top: 24,
+    left: 22,
+    right: 22,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    zIndex: 3,
+  },
+  avatarPulse: {
+    shadowColor: '#fff',
+    shadowOpacity: 0.18,
+    shadowRadius: 9,
+    shadowOffset: { width: 0, height: 1 },
+    borderRadius: 26,
+    backgroundColor: '#27335599',
+    padding: 2,
   },
   heroAvatar: {
-    width: 44,
-    height: 44,
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    borderWidth: 3,
+    borderColor: '#7de2fc',
+    backgroundColor: '#fff',
+  },
+  inboxIconWrap: {
+    position: 'relative',
+    backgroundColor: '#26326c77',
     borderRadius: 22,
-    borderColor: "#fff",
-    borderWidth: 2,
-    backgroundColor: "#c9dbfc",
+    padding: 7,
   },
-  inboxBadgeWrap: { padding: 5 },
-  inboxDot: {
-    position: "absolute",
-    top: 8,
-    right: 8,
-    width: 9,
-    height: 9,
+  inboxDotGlow: {
+    position: 'absolute',
+    top: 6,
+    right: 7,
+    width: 12,
+    height: 12,
     borderRadius: 6,
-    backgroundColor: "#22c55e",
-    borderWidth: 1,
-    borderColor: "#fff",
+    backgroundColor: '#22c55e',
+    borderWidth: 1.5,
+    borderColor: '#fff',
+    shadowColor: '#22c55e',
+    shadowOpacity: 0.8,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 0 },
   },
-  heroContent: { position: "absolute", bottom: 30, left: 24 },
-  heroGreet: { color: "#fff", fontSize: 17, fontWeight: "700", marginBottom: 3 },
+  heroContent: {
+    position: 'absolute',
+    bottom: 36,
+    left: 28,
+    zIndex: 3,
+  },
+  heroGreet: {
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: '700',
+    marginBottom: 1,
+    textShadowColor: '#000a',
+    textShadowRadius: 3,
+  },
   heroTitle: {
-    color: "#fff",
-    fontSize: 23,
-    fontWeight: "800",
-    marginBottom: 2,
+    color: '#fff',
+    fontSize: 26,
+    fontWeight: '900',
+    marginBottom: 3,
     letterSpacing: -0.7,
+    textShadowColor: '#0009',
+    textShadowRadius: 9,
   },
   heroSub: {
-    color: "#dbeafe",
-    fontSize: 14,
-    fontWeight: "500",
-    marginTop: 2,
+    color: '#dbeafe',
+    fontSize: 15,
+    fontWeight: '500',
     letterSpacing: -0.2,
+    marginTop: 3,
   },
 
   // STORIES/ACTIVE TRAVELERS
@@ -486,115 +588,3 @@ const styles = StyleSheet.create({
     borderWidth: 1.3,
     backgroundColor: "#eee",
   },
-  eventJoinTxt: {
-    color: "#f1f5fa",
-    marginLeft: 8,
-    fontWeight: "700",
-    fontSize: 14,
-    textShadowColor: "#0007",
-    textShadowRadius: 6,
-  },
-  joinBtn: {
-    alignSelf: "flex-start",
-    backgroundColor: "#3B82F6",
-    borderRadius: 9,
-    paddingVertical: 7,
-    paddingHorizontal: 22,
-    marginTop: 2,
-  },
-  joinBtnText: {
-    color: "#fff",
-    fontWeight: "800",
-    fontSize: 15,
-    letterSpacing: -0.2,
-  },
-
-  // NOTICEBOARD / FEED
-  noticeboardSection: {
-    marginTop: 5,
-    marginBottom: 28,
-    paddingHorizontal: 17,
-  },
-  feedTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#f3f5fa",
-    marginBottom: 10,
-    letterSpacing: -0.3,
-  },
-  noticeItem: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    marginBottom: 17,
-    backgroundColor: "#1d2135",
-    borderRadius: 14,
-    padding: 13,
-    shadowColor: "#3b82f62a",
-    shadowOpacity: 0.09,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
-  },
-  feedAvatar: {
-    width: 41,
-    height: 41,
-    borderRadius: 20,
-    marginRight: 13,
-    marginTop: 3,
-    backgroundColor: "#333",
-  },
-  noticeTextWrap: { flex: 1 },
-  feedMsg: {
-    fontSize: 15,
-    color: "#e7e9f4",
-    marginBottom: 6,
-    fontWeight: "500",
-  },
-  feedMetaRow: { flexDirection: "row", alignItems: "center" },
-  feedTime: {
-    color: "#818cf8",
-    fontSize: 12,
-    fontWeight: "700",
-    marginRight: 12,
-  },
-  feedReplies: {
-    color: "#aaa",
-    fontSize: 12,
-    fontWeight: "700",
-    marginRight: 10,
-  },
-  feedReplyBtn: {
-    backgroundColor: "#2b35e3",
-    borderRadius: 8,
-    paddingVertical: 3,
-    paddingHorizontal: 13,
-    marginLeft: 6,
-  },
-  feedReplyBtnText: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 13,
-  },
-
-  // FAB
-  fab: {
-    position: "absolute",
-    bottom: 29,
-    right: 28,
-    zIndex: 100,
-    shadowColor: "#3B82F6",
-    shadowOpacity: 0.23,
-    shadowOffset: { width: 0, height: 7 },
-    shadowRadius: 18,
-    elevation: 10,
-  },
-  fabGrad: {
-    borderRadius: 34,
-    width: 62,
-    height: 62,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
-
-export default ExploreScreen;
