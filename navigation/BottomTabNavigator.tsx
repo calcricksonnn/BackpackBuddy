@@ -2,10 +2,13 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 
+// The ExploreScreen component uses a named export.
 import { ExploreScreen } from "../screens/ExploreScreen";
-import { MeetupsScreen } from "../screens/MeetupsScreen";
-import { InboxScreen } from "../screens/InboxScreen";
-import { ProfileScreen } from "../screens/ProfileScreen";
+
+// The other three screens use a default export.
+import MeetupsScreen from "../screens/MeetupsScreen";
+import InboxScreen from "../screens/InboxScreen";
+import ProfileScreen from "../screens/ProfileScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -22,10 +25,7 @@ export default function BottomTabNavigator() {
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarStyle: {
-          position: "absolute",
-          left: 0,
-          right: 0,
-          bottom: 0,
+          // Changed to be a full bar like Instagram and Facebook
           height: 62,
           borderTopWidth: 0.8,
           borderTopColor: "#e5e7eb",
@@ -35,6 +35,8 @@ export default function BottomTabNavigator() {
           shadowRadius: 12,
           shadowOffset: { width: 0, height: -2 },
           elevation: 19,
+          // Removed 'position: "absolute"' to make it a full bar
+          // This ensures it sits at the bottom of the screen layout
         },
         tabBarShowLabel: true,
         tabBarLabelStyle: {
