@@ -14,7 +14,7 @@ import { Ionicons, Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
-// MOCK DATA
+// --- MOCK DATA (no changes needed) ---
 const USER = {
   name: "Cal",
   avatar: "https://randomuser.me/api/portraits/men/3.jpg",
@@ -182,7 +182,7 @@ const FAB_ACTIONS = [
   },
 ];
 
-// --- ExploreHeader Component ---
+// --- EXPLORE HEADER: Refined Styles & Animations ---
 const HEADER_GRADIENT = ["#53c7fa", "#428afc"];
 
 const ExploreHeader = ({ user, stats, onNotif, onProfile }) => {
@@ -202,33 +202,22 @@ const ExploreHeader = ({ user, stats, onNotif, onProfile }) => {
     <View style={headerStyles.headerWrap}>
       <LinearGradient colors={HEADER_GRADIENT} style={headerStyles.headerBg}>
         <View style={headerStyles.headerRow}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <TouchableOpacity onPress={onProfile} style={{ flexDirection: "row", alignItems: "center" }}>
             <Image source={{ uri: user.avatar }} style={headerStyles.avatar} />
             <View style={{ marginLeft: 13 }}>
               <Text style={headerStyles.hello}>
                 Welcome back, <Text style={{ fontWeight: "bold" }}>{user.name}</Text>{" "}
-                <Animated.Text
-                  style={{
-                    fontSize: 19,
-                  }}
-                >
-                  👋
-                </Animated.Text>
+                <Animated.Text style={{ fontSize: 19 }}>👋</Animated.Text>
               </Text>
               <Text style={headerStyles.location}>
                 {user.location} • {user.weather}
               </Text>
             </View>
-          </View>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <TouchableOpacity onPress={onNotif} style={{ marginRight: 11 }}>
-              <Ionicons name="notifications-outline" size={26} color="#fff" />
-              {user.hasNotif && <View style={headerStyles.notifDot} />}
-            </TouchableOpacity>
-            <TouchableOpacity onPress={onProfile}>
-              <Ionicons name="person-circle-outline" size={32} color="#fff" />
-            </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onNotif}>
+            <Ionicons name="notifications-outline" size={28} color="#fff" />
+            {user.hasNotif && <View style={headerStyles.notifDot} />}
+          </TouchableOpacity>
         </View>
       </LinearGradient>
       <View style={headerStyles.statsCardWrap}>
@@ -257,17 +246,16 @@ const ExploreHeader = ({ user, stats, onNotif, onProfile }) => {
 const headerStyles = StyleSheet.create({
   headerWrap: {
     backgroundColor: "#f6faff",
-    paddingBottom: 10,
-    marginBottom: 18,
+    paddingBottom: 22,
+    marginBottom: 20,
   },
   headerBg: {
     width: "100%",
-    paddingTop: Platform.OS === "android" ? 38 : 18,
-    paddingBottom: 36,
+    paddingTop: Platform.OS === "android" ? 48 : 28,
+    paddingBottom: 50,
     paddingHorizontal: 22,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
-    minHeight: 105,
+    borderBottomLeftRadius: 36,
+    borderBottomRightRadius: 36,
   },
   headerRow: {
     flexDirection: "row",
@@ -276,9 +264,9 @@ const headerStyles = StyleSheet.create({
     marginTop: 7,
   },
   avatar: {
-    width: 49,
-    height: 49,
-    borderRadius: 24.5,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     borderWidth: 2,
     borderColor: "#fff",
     backgroundColor: "#e7f4fe",
@@ -287,7 +275,6 @@ const headerStyles = StyleSheet.create({
     fontSize: 18,
     color: "#fff",
     fontWeight: "600",
-    marginBottom: 0,
     letterSpacing: -0.1,
   },
   location: {
@@ -299,7 +286,7 @@ const headerStyles = StyleSheet.create({
   },
   notifDot: {
     position: "absolute",
-    top: 5,
+    top: 2,
     right: 2,
     width: 12,
     height: 12,
@@ -311,7 +298,7 @@ const headerStyles = StyleSheet.create({
   statsCardWrap: {
     alignItems: "center",
     position: "absolute",
-    top: Platform.OS === "android" ? 75 : 66,
+    top: Platform.OS === "android" ? 105 : 95,
     left: 0,
     right: 0,
     zIndex: 2,
@@ -320,36 +307,36 @@ const headerStyles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: "rgba(255,255,255,0.97)",
     borderRadius: 22,
-    paddingVertical: 13,
+    paddingVertical: 14,
     paddingHorizontal: 25,
     shadowColor: "#2e6dc2",
-    shadowOpacity: 0.09,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 9 },
-    elevation: 17,
-    minWidth: 266,
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 12 },
+    elevation: 20,
+    minWidth: 280,
     justifyContent: "space-between",
   },
   statItem: {
     alignItems: "center",
     flex: 1,
-    marginHorizontal: 14,
+    marginHorizontal: 10,
   },
   statNum: {
-    fontSize: 23,
+    fontSize: 26,
     fontWeight: "900",
     color: "#387ff7",
     marginBottom: 2,
   },
   statLabel: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontWeight: "700",
     color: "#b3bed7",
     letterSpacing: 0.1,
   },
 });
 
-// --- NearbyBackpackers Component ---
+// --- NEARBY BACKPACKERS: Improved Card Design and Layout ---
 const BackpackerCard = ({ item, onConnect, onWave }) => {
   const scale = useRef(new Animated.Value(1)).current;
   const handlePressIn = () => Animated.spring(scale, { toValue: 0.97, useNativeDriver: true }).start();
@@ -401,7 +388,7 @@ const NearbyBackpackers = () => {
   };
 
   return (
-    <View>
+    <View style={{ marginBottom: 10 }}>
       <View style={backpackerStyles.headerRow}>
         <Text style={backpackerStyles.sectionTitle}>Nearby Backpackers</Text>
         <TouchableOpacity>
@@ -426,43 +413,43 @@ const backpackerStyles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginHorizontal: 17,
-    marginBottom: 6,
-    marginTop: 24,
+    marginBottom: 12,
   },
   sectionTitle: {
-    fontSize: 17,
+    fontSize: 20,
     fontWeight: "900",
     color: "#1e293b",
   },
   seeAllBtn: {
     color: "#3979e9",
     fontWeight: "700",
-    fontSize: 13,
+    fontSize: 14,
     padding: 4,
   },
   card: {
     backgroundColor: "#fff",
-    borderRadius: 19,
-    width: 144,
-    paddingVertical: 14,
-    paddingHorizontal: 13,
+    borderRadius: 22,
+    width: 160,
+    paddingVertical: 18,
+    paddingHorizontal: 15,
     alignItems: "center",
     shadowColor: "#7acbfa",
-    shadowOpacity: 0.1,
-    shadowRadius: 13,
-    shadowOffset: { width: 0, height: 7 },
-    marginBottom: 7,
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 10 },
+    marginBottom: 10,
+    elevation: 8,
   },
   avatarWrap: {
     position: "relative",
-    marginBottom: 4,
+    marginBottom: 6,
     alignItems: "center",
     justifyContent: "center",
   },
   avatar: {
-    width: 49,
-    height: 49,
-    borderRadius: 24.5,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     backgroundColor: "#eaf3fe",
     borderWidth: 2,
     borderColor: "#e7f3ff",
@@ -471,8 +458,8 @@ const backpackerStyles = StyleSheet.create({
     position: "absolute",
     bottom: 5,
     right: 8,
-    width: 11,
-    height: 11,
+    width: 12,
+    height: 12,
     borderRadius: 6,
     backgroundColor: "#22ce69",
     borderWidth: 2,
@@ -482,7 +469,7 @@ const backpackerStyles = StyleSheet.create({
     position: "absolute",
     bottom: -10,
     left: 17,
-    fontSize: 17,
+    fontSize: 19,
     backgroundColor: "#fff",
     borderRadius: 8,
     paddingHorizontal: 4,
@@ -492,85 +479,80 @@ const backpackerStyles = StyleSheet.create({
     borderColor: "#e3edfa",
   },
   name: {
-    fontWeight: "700",
+    fontWeight: "800",
     color: "#2d3865",
-    fontSize: 15,
-    marginTop: 3,
-    marginBottom: 0,
+    fontSize: 16,
+    marginTop: 6,
   },
   distance: {
     color: "#9db7c9",
-    fontSize: 12,
-    marginBottom: 3,
+    fontSize: 13,
+    marginBottom: 5,
   },
   tagWrap: {
     backgroundColor: "#eaf6fd",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    marginBottom: 5,
-    marginTop: 1,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    marginBottom: 7,
   },
   tagTxt: {
     color: "#4899e7",
     fontWeight: "700",
-    fontSize: 12,
+    fontSize: 13,
     textTransform: "capitalize",
   },
   mutualsBadge: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#ecf5fe",
-    borderRadius: 7,
-    paddingHorizontal: 7,
-    paddingVertical: 1,
-    marginTop: 1,
-    marginBottom: 3,
+    borderRadius: 9,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    marginTop: 2,
   },
   mutualsTxt: {
     color: "#349af5",
     fontWeight: "700",
-    fontSize: 11.5,
-    marginLeft: 2,
+    fontSize: 12,
+    marginLeft: 4,
   },
   actionRow: {
     flexDirection: "row",
-    gap: 5,
-    marginTop: 7,
+    gap: 8,
+    marginTop: 12,
     width: "100%",
     justifyContent: "center",
   },
   waveBtn: {
     backgroundColor: "#e9f1fd",
-    borderRadius: 6,
-    paddingHorizontal: 9,
-    paddingVertical: 4,
-    marginRight: 2,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
   },
   waveBtnTxt: {
     color: "#387ff7",
     fontWeight: "700",
-    fontSize: 13,
+    fontSize: 14,
   },
   connectBtn: {
     backgroundColor: "#2563eb",
-    borderRadius: 6,
-    paddingHorizontal: 13,
-    paddingVertical: 4,
-    marginLeft: 2,
+    borderRadius: 10,
+    paddingHorizontal: 18,
+    paddingVertical: 6,
     shadowColor: "#3979e9",
-    shadowOpacity: 0.11,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 7,
+    shadowOffset: { width: 0, height: 4 },
   },
   connectBtnTxt: {
     color: "#fff",
     fontWeight: "700",
-    fontSize: 13,
+    fontSize: 14,
   },
 });
 
-// --- LocalEvents Component ---
+// --- LOCAL EVENTS: Polished Card Design ---
 const LocalEvents = () => {
   const onJoin = (event) => {
     console.log("Join event:", event.title);
@@ -597,11 +579,11 @@ const LocalEvents = () => {
               {item.desc}
             </Text>
             <View style={eventStyles.metaRow}>
-              <Ionicons name="calendar-outline" size={14} color="#91aedc" />
+              <Ionicons name="calendar-outline" size={15} color="#91aedc" />
               <Text style={eventStyles.metaTxt}>{item.date}</Text>
             </View>
             <View style={eventStyles.metaRow}>
-              <Ionicons name="location-outline" size={14} color="#91aedc" />
+              <Ionicons name="location-outline" size={15} color="#91aedc" />
               <Text style={eventStyles.metaTxt}>{item.location}</Text>
             </View>
             <View style={eventStyles.goingRow}>
@@ -637,66 +619,65 @@ const eventStyles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginHorizontal: 19,
-    marginBottom: 6,
+    marginBottom: 12,
   },
   sectionTitle: {
-    fontSize: 17,
+    fontSize: 20,
     fontWeight: "900",
     color: "#1e293b",
   },
   seeAllBtn: {
     color: "#3979e9",
     fontWeight: "700",
-    fontSize: 13,
+    fontSize: 14,
     padding: 4,
   },
   card: {
     backgroundColor: "#fff",
-    borderRadius: 18,
-    width: 210,
-    padding: 18,
+    borderRadius: 22,
+    width: 230,
+    padding: 20,
     shadowColor: "#b4dbfa",
-    shadowOpacity: 0.13,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
-    marginBottom: 6,
-    justifyContent: "flex-end",
-    elevation: 7,
+    shadowOpacity: 0.15,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 10 },
+    marginBottom: 8,
+    justifyContent: "space-between",
+    elevation: 8,
   },
   title: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "900",
     color: "#224388",
-    marginBottom: 3,
+    marginBottom: 4,
   },
   desc: {
     fontSize: 13,
     color: "#4b5876",
-    marginBottom: 6,
+    marginBottom: 8,
     fontWeight: "400",
   },
   metaRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 1,
-    marginTop: 0,
+    marginBottom: 2,
   },
   metaTxt: {
     color: "#7ca7dc",
     fontWeight: "700",
-    fontSize: 12.5,
-    marginLeft: 5,
+    fontSize: 13,
+    marginLeft: 6,
   },
   goingRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 6,
-    marginBottom: 7,
+    marginTop: 10,
+    marginBottom: 10,
   },
   goingAvatar: {
-    width: 27,
-    height: 27,
-    borderRadius: 13.5,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     borderWidth: 2,
     borderColor: "#fff",
     backgroundColor: "#e5f3ff",
@@ -704,30 +685,30 @@ const eventStyles = StyleSheet.create({
   goingTxt: {
     color: "#3979e9",
     fontWeight: "700",
-    fontSize: 13,
-    marginLeft: 11,
+    fontSize: 14,
+    marginLeft: 12,
   },
   joinBtn: {
-    marginTop: 4,
+    marginTop: 8,
     backgroundColor: "#2563eb",
-    borderRadius: 9,
-    paddingVertical: 7,
-    paddingHorizontal: 17,
+    borderRadius: 10,
+    paddingVertical: 9,
+    paddingHorizontal: 20,
     alignSelf: "flex-end",
     shadowColor: "#3979e9",
-    shadowOpacity: 0.13,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
   },
   joinBtnTxt: {
     color: "#fff",
     fontWeight: "800",
-    fontSize: 14.5,
+    fontSize: 15,
     letterSpacing: 0.2,
   },
 });
 
-// --- TrendingGroups Component ---
+// --- TRENDING GROUPS: Polished Card Design ---
 const TrendingGroups = () => {
   const onJoin = (group) => {
     console.log("Join group:", group.name);
@@ -776,7 +757,7 @@ const TrendingGroups = () => {
             </Text>
             <View style={groupStyles.bottomRow}>
               <View style={groupStyles.membersRow}>
-                <Ionicons name="people-outline" size={14} color="#7aa1e7" />
+                <Ionicons name="people-outline" size={15} color="#7aa1e7" />
                 <Text style={groupStyles.membersTxt}>{item.membersCount} members</Text>
               </View>
               <TouchableOpacity style={groupStyles.joinBtn} onPress={() => onJoin(item)}>
@@ -792,7 +773,7 @@ const TrendingGroups = () => {
 
 const groupStyles = StyleSheet.create({
   wrap: {
-    marginTop: 18,
+    marginTop: 22,
     marginBottom: 8,
   },
   headerRow: {
@@ -800,106 +781,102 @@ const groupStyles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginHorizontal: 19,
-    marginBottom: 6,
+    marginBottom: 12,
   },
   sectionTitle: {
-    fontSize: 17,
+    fontSize: 20,
     fontWeight: "900",
     color: "#1e293b",
   },
   seeAllBtn: {
     color: "#3979e9",
     fontWeight: "700",
-    fontSize: 13,
+    fontSize: 14,
     padding: 4,
   },
   card: {
     backgroundColor: "#fff",
-    borderRadius: 18,
-    width: 215,
-    padding: 17,
+    borderRadius: 22,
+    width: 230,
+    padding: 20,
     shadowColor: "#b4dbfa",
-    shadowOpacity: 0.13,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
-    marginBottom: 6,
-    elevation: 6,
-    marginRight: 2,
-    marginLeft: 2,
+    shadowOpacity: 0.15,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 10 },
+    marginBottom: 8,
+    elevation: 8,
   },
   avatar: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     borderWidth: 2,
     borderColor: "#fff",
     backgroundColor: "#e5f3ff",
   },
   activeNowBadge: {
     backgroundColor: "#dbf7e2",
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    marginLeft: 9,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    marginLeft: 12,
   },
   activeNowText: {
     color: "#1fb378",
     fontWeight: "700",
-    fontSize: 11.5,
+    fontSize: 12,
   },
   name: {
     color: "#19387b",
     fontWeight: "900",
-    fontSize: 15,
-    marginBottom: 1,
-    marginTop: 4,
+    fontSize: 16,
+    marginBottom: 2,
+    marginTop: 6,
     letterSpacing: -0.1,
   },
   desc: {
     color: "#46577a",
     fontSize: 13,
     fontWeight: "400",
-    marginBottom: 6,
+    marginBottom: 10,
     flexWrap: "wrap",
-    marginTop: 1,
   },
   bottomRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 4,
+    marginTop: 8,
     justifyContent: "space-between",
   },
   membersRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
   },
   membersTxt: {
     color: "#7aa1e7",
     fontWeight: "700",
-    fontSize: 12.5,
-    marginLeft: 4,
+    fontSize: 13,
+    marginLeft: 8,
   },
   joinBtn: {
     backgroundColor: "#2563eb",
-    borderRadius: 9,
-    paddingVertical: 7,
-    paddingHorizontal: 14,
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     alignSelf: "flex-end",
     shadowColor: "#3979e9",
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
   },
   joinBtnTxt: {
     color: "#fff",
     fontWeight: "800",
-    fontSize: 13.5,
+    fontSize: 14,
     letterSpacing: 0.2,
   },
 });
 
-// --- MiniMapSection Component ---
+// --- MINI MAP SECTION: Polished Card Design ---
 const markerColor = {
   you: "#ef4444",
   backpacker: "#3b82f6",
@@ -954,53 +931,53 @@ const MiniMapSection = ({ onMapPress }) => {
 const miniMapStyles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
-    borderRadius: 19,
+    borderRadius: 22,
     marginHorizontal: 16,
     marginBottom: 28,
-    padding: 16,
+    padding: 20,
     alignItems: "center",
     shadowColor: "#c8dfff",
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.1,
+    shadowRadius: 15,
+    shadowOffset: { width: 0, height: 8 },
     elevation: 8,
   },
   title: {
     fontWeight: "900",
     color: "#22325e",
-    fontSize: 15,
-    marginBottom: 9,
+    fontSize: 20,
+    marginBottom: 12,
     alignSelf: "flex-start",
   },
   map: {
     width: "100%",
-    height: 130,
-    borderRadius: 13,
+    height: 160,
+    borderRadius: 16,
     overflow: "hidden",
     backgroundColor: "#e6f3fb",
-    marginBottom: 10,
+    marginBottom: 12,
   },
   fullMapBtn: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#edf6fe",
-    borderRadius: 9,
-    paddingVertical: 5,
-    paddingHorizontal: 14,
-    marginBottom: 9,
+    borderRadius: 10,
+    paddingVertical: 7,
+    paddingHorizontal: 16,
+    marginBottom: 10,
     alignSelf: "flex-end",
   },
   fullMapBtnTxt: {
     color: "#3979e9",
     fontWeight: "700",
-    fontSize: 13,
-    marginLeft: 6,
+    fontSize: 14,
+    marginLeft: 8,
   },
   legendRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 1,
-    gap: 6,
+    marginTop: 4,
+    gap: 8,
   },
   dot: {
     width: 12,
@@ -1016,7 +993,7 @@ const miniMapStyles = StyleSheet.create({
   },
 });
 
-// --- ExpandingFAB Component ---
+// --- EXPANDING FAB: No changes, as it's already a good design ---
 const ExpandingFAB = () => {
   const [open, setOpen] = useState(false);
   const anim = useRef(new Animated.Value(0)).current;
