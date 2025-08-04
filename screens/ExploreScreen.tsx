@@ -130,7 +130,6 @@ const MAP_LEGEND = [
 
 // --- COMPONENTS ---
 
-// App Header with Stats
 const AppHeader = ({ brand, user, stats, onNotif, onProfile }) => {
   return (
     <LinearGradient colors={["#6a93ec", "#53c7fa"]} style={headerStyles.headerBg}>
@@ -216,13 +215,11 @@ const LocalEventsSection = ({ data }) => {
   return (
     <View style={sectionStyles.sectionContainer}>
       <Text style={sectionStyles.sectionTitleEvents}>Local Events</Text>
-      <FlatList
-        data={data}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={sectionStyles.verticalList}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <Card item={item} />}
-      />
+      {data.map((item) => (
+        <View key={item.id} style={sectionStyles.verticalListItem}>
+          <Card item={item} />
+        </View>
+      ))}
     </View>
   );
 };
@@ -270,13 +267,11 @@ const ActiveGroupsSection = ({ data }) => {
           <Text style={sectionStyles.seeAllBtn}>View All</Text>
         </TouchableOpacity>
       </View>
-      <FlatList
-        data={data}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={sectionStyles.verticalList}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <Card item={item} />}
-      />
+      {data.map((item) => (
+        <View key={item.id} style={sectionStyles.verticalListItem}>
+          <Card item={item} />
+        </View>
+      ))}
     </View>
   );
 };
@@ -337,24 +332,28 @@ export function ExploreScreen() {
 
   return (
     <View style={styles.container}>
-      {/* App Header is commented out to match the photo with the simple header and no stats */}
-      {/* <AppHeader brand={APP_BRAND} user={USER} stats={STATS} onNotif={handleNotifPress} onProfile={handleProfilePress} /> */}
-      
-      {/* The `Active Groups` component is first in one of the photos */}
+      {/* This is the header component from the screenshot.
+        It has the brand, location, notif icon, and the stats.
+      */}
+      <AppHeader
+        brand={APP_BRAND}
+        user={USER}
+        stats={STATS}
+        onNotif={handleNotifPress}
+        onProfile={handleProfilePress}
+      />
+
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <ActiveGroupsSection data={MOCK_GROUPS} />
+        {/* All sections are placed inside the main ScrollView */}
+        <NearbyBackpackersSection data={MOCK_BACKPACKERS} />
         <NearbyActivitySection onMapPress={handleMapPress} />
         <LocalEventsSection data={MOCK_EVENTS} />
-        
-        {/*
-          Backpackers Section is present in the other photo. I will include it here for completeness
-          but will place the groups and map sections first to match the primary image provided.
-        */}
-        {/* <NearbyBackpackersSection data={MOCK_BACKPACKERS} /> */}
+        <ActiveGroupsSection data={MOCK_GROUPS} />
       </ScrollView>
     </View>
   );
 }
+
 
 // --- NEW STYLES ---
 const headerStyles = StyleSheet.create({
@@ -439,6 +438,10 @@ const sectionStyles = StyleSheet.create({
   verticalList: {
     paddingHorizontal: 20,
     gap: 15,
+  },
+  verticalListItem: {
+    marginBottom: 15,
+    marginHorizontal: 20, // Add horizontal margin here for consistency
   },
 });
 
@@ -555,8 +558,6 @@ const cardStyles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 20,
     borderRadius: 15,
-    marginBottom: 10,
-    marginHorizontal: 20,
     shadowColor: "#000",
     shadowOpacity: 0.05,
     shadowRadius: 10,
