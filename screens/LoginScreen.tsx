@@ -10,24 +10,62 @@ import {
   Platform,
   ScrollView,
   StatusBar,
-  ActivityIndicator,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as Animatable from 'react-native-animatable';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts, Poppins_700Bold, Poppins_400Regular } from '@expo-google-fonts/poppins';
 import AppLoading from 'expo-app-loading';
-
-import { login } from '../firebase/auth';
+import { register } from '../firebase/auth';
 import { useAuthStore } from '../store/authStore';
 
-const LoginScreen: React.FC = () => {
+const RegisterScreen: React.FC = () => {
   const navigation = useNavigation();
   const setUser = useAuthStore((state) => state.setUser);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+
+  const handleChange = (key: string, val: string) => {
+    setForm({ ...form, [key]: val });
+  };
+
+  const handleSubmit = async () => {
+    if (!form.email || !form.password || !form.firstName || !form.lastName || !form.username) {
+      Alert.alert('Missing fields', 'Please complete all fields');
+      return;
+    }
+
+    if (form.password !== form.confirmPassword) {
+      Alert.alert('Oops!', 'Passwords do not match');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const user = await register(
+        form.email,
+        form.password,
+        `${form.firstName} ${form.lastName}`,
+        form.username
+      );
+      setUser(user);
+      navigation.reset({ index: 0, routes: [{ name: 'Explore' }] });
+    } catch (err: any) {
+      Alert.alert('Registration failed', err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   let [fontsLoaded] = useFonts({
     Poppins_700Bold,
@@ -36,27 +74,9 @@ const LoginScreen: React.FC = () => {
 
   if (!fontsLoaded) return <AppLoading />;
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('Missing fields', 'Please enter email and password');
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const user = await login(email, password);
-      setUser(user);
-      navigation.reset({ index: 0, routes: [{ name: 'Explore' }] });
-    } catch (err: any) {
-      Alert.alert('Login failed', err.message || 'Please try again');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <ImageBackground
-      source={{ uri: 'https://your-link.com/bg2.jpg' }}
+      source={{ uri: 'https://your-link.com/bg3.jpg' }}
       style={styles.background}
       resizeMode="cover"
     >
@@ -72,40 +92,43 @@ const LoginScreen: React.FC = () => {
       >
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
           <Animatable.View animation="fadeInUp" delay={200} style={styles.card}>
-            <Text style={styles.heading}>Welcome Back 👋</Text>
+            <Text style={styles.heading}>Create Account 🧭</Text>
 
-            <TextInput
-              placeholder="Email"
-              placeholderTextColor="#eee"
-              style={styles.input}
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-              keyboardType="email-address"
-            />
+            {['firstName', 'lastName', 'username', 'email', 'password', 'confirmPassword'].map(
+              (field) => (
+                <TextInput
+                  key={field}
+                  placeholder={field
+                    .replace('firstName', 'First Name')
+                    .replace('lastName', 'Last Name')
+                    .replace('confirmPassword', 'Confirm Password')
+                    .replace('password', 'Password')
+                    .replace('username', 'Username')
+                    .replace('email', 'Email')}
+                  placeholderTextColor="#eee"
+                  style={styles.input}
+                  value={form[field as keyof typeof form]}
+                  onChangeText={(v) => handleChange(field, v)}
+                  secureTextEntry={field.includes('password')}
+                  autoCapitalize={field === 'email' ? 'none' : undefined}
+                  keyboardType={field === 'email' ? 'email-address' : 'default'}
+                />
+              )
+            )}
 
-            <TextInput
-              placeholder="Password"
-              placeholderTextColor="#eee"
-              style={styles.input}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
-
-            <TouchableOpacity onPress={handleLogin} style={styles.loginButton} disabled={loading}>
-              <LinearGradient colors={['#007AFF', '#005BB5']} style={styles.loginGradient}>
+            <TouchableOpacity onPress={handleSubmit} style={styles.registerButton} disabled={loading}>
+              <LinearGradient colors={['#007AFF', '#005BB5']} style={styles.registerGradient}>
                 {loading ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
-                  <Text style={styles.loginText}>Log In</Text>
+                  <Text style={styles.registerText}>Create Account</Text>
                 )}
               </LinearGradient>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
               <Text style={styles.link}>
-                Don’t have an account? <Text style={styles.linkHighlight}>Sign up</Text>
+                Already have an account? <Text style={styles.linkHighlight}>Log in</Text>
               </Text>
             </TouchableOpacity>
           </Animatable.View>
@@ -115,7 +138,7 @@ const LoginScreen: React.FC = () => {
   );
 };
 
-export default LoginScreen;
+export default RegisterScreen;
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
@@ -134,32 +157,32 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.2)',
   },
   heading: {
-    fontSize: 28,
+    fontSize: 26,
     fontFamily: 'Poppins_700Bold',
     color: '#fff',
-    marginBottom: 24,
+    marginBottom: 20,
     textAlign: 'center',
   },
   input: {
-    height: 50,
+    height: 48,
     borderRadius: 12,
     paddingHorizontal: 16,
     backgroundColor: 'rgba(255,255,255,0.1)',
-    marginBottom: 16,
-    fontSize: 16,
+    marginBottom: 14,
+    fontSize: 15,
     color: '#fff',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.2)',
   },
-  loginButton: {
-    marginTop: 8,
+  registerButton: {
+    marginTop: 12,
   },
-  loginGradient: {
+  registerGradient: {
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
   },
-  loginText: {
+  registerText: {
     color: '#fff',
     fontSize: 16,
     fontFamily: 'Poppins_700Bold',
