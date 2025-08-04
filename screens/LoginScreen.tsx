@@ -22,7 +22,7 @@ import AppLoading from 'expo-app-loading';
 import { login } from '../firebase/auth';
 import { useAuthStore } from '../store/authStore';
 
-export const LoginScreen: React.FC = () => {
+const LoginScreen: React.FC = () => {
   const navigation = useNavigation();
   const setUser = useAuthStore((state) => state.setUser);
   const [email, setEmail] = useState('');
@@ -45,7 +45,7 @@ export const LoginScreen: React.FC = () => {
     try {
       setLoading(true);
       const user = await login(email, password);
-      setUser(user); // user contains uid, email, firstName, lastName, username
+      setUser(user);
       navigation.reset({ index: 0, routes: [{ name: 'Explore' }] });
     } catch (err: any) {
       Alert.alert('Login failed', err.message || 'Please try again');
@@ -114,6 +114,8 @@ export const LoginScreen: React.FC = () => {
     </ImageBackground>
   );
 };
+
+export default LoginScreen;
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
