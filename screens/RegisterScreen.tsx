@@ -21,7 +21,7 @@ import AppLoading from 'expo-app-loading';
 import { register } from '../firebase/auth';
 import { useAuthStore } from '../store/authStore';
 
-export const RegisterScreen: React.FC = () => {
+const RegisterScreen: React.FC = () => {
   const navigation = useNavigation();
   const setUser = useAuthStore((state) => state.setUser);
   const [loading, setLoading] = useState(false);
@@ -137,6 +137,8 @@ export const RegisterScreen: React.FC = () => {
     </ImageBackground>
   );
 };
+
+export default RegisterScreen;
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
