@@ -2,10 +2,10 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 
-import ExploreScreen from "../screens/ExploreScreen";
-import MeetupsScreen from "../screens/MeetupsScreen";
-import InboxScreen from "../screens/InboxScreen";
-import ProfileScreen from "../screens/ProfileScreen";
+import { ExploreScreen } from "../screens/ExploreScreen";
+import { MeetupsScreen } from "../screens/MeetupsScreen";
+import { InboxScreen } from "../screens/InboxScreen";
+import { ProfileScreen } from "../screens/ProfileScreen";
 
 const Tab = createBottomTabNavigator();
 
