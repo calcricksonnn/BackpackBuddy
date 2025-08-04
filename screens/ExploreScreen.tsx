@@ -14,12 +14,12 @@ import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
-// MOCK DATA (New for the feed)
+// MOCK DATA
+const APP_BRAND = "WanderConnect";
 const USER = {
-  name: "Cal",
+  name: "You",
   avatar: "https://randomuser.me/api/portraits/men/3.jpg",
-  location: "Cervantes, Australia",
-  weather: "17° Sunny",
+  location: "Bangkok, Thailand",
   hasNotif: true,
 };
 
@@ -34,122 +34,139 @@ const MOCK_BACKPACKERS = [
     id: "1",
     name: "Alex Chen",
     avatar: "https://randomuser.me/api/portraits/men/11.jpg",
-    online: true,
-    flag: "🇬🇧",
-    distance: "0.5 km",
+    distance: "0.5 km away",
+    status: "solo",
   },
   {
     id: "2",
     name: "Sarah Jones",
     avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-    online: true,
-    flag: "🇯🇵",
-    distance: "0.5 km",
+    distance: "0.5 km away",
+    status: "couple",
   },
   {
     id: "3",
     name: "Lee Park",
     avatar: "https://randomuser.me/api/portraits/men/22.jpg",
-    online: false,
-    flag: "🇰🇷",
-    distance: "0.8 km",
-  },
-  {
-    id: "4",
-    name: "Maria Garcia",
-    avatar: "https://randomuser.me/api/portraits/women/1.jpg",
-    online: true,
-    flag: "🇪🇸",
-    distance: "1.2 km",
+    distance: "0.8 km away",
+    status: "solo",
   },
 ];
 
 const MOCK_EVENTS = [
   {
     id: "1",
-    title: "Hostel BBQ Night",
-    date: "Today • 8:00 PM",
-    location: "Main Beach Hostel",
-    going: 9,
-    isJoined: true,
+    title: "Temple Tour & Local Food",
+    date: "Tomorrow",
+    time: "7:33 PM",
+    going: 5,
+    distance: "0.5 km",
   },
   {
     id: "2",
-    title: "Beach Volleyball",
-    date: "Tomorrow • 5:00 PM",
-    location: "Main Beach",
+    title: "Chatuchak Weekend Market Adventure",
+    date: "06/08/2025",
+    time: "7:33 PM",
     going: 4,
-    isJoined: false,
+    distance: "0.5 km",
+  },
+  {
+    id: "3",
+    title: "Rooftop Bar Crawl",
+    date: "07/08/2025",
+    time: "8:00 PM",
+    going: 7,
+    distance: "0.5 km",
   },
 ];
 
 const MOCK_GROUPS = [
   {
     id: "1",
-    name: "Hiking Enthusiasts",
+    name: "Southeast Asia Backpackers",
+    description: "A group for solo travelers exploring Thailand, Vietnam, Cambodia, and Laos. Share tips,...",
     members: [
       "https://randomuser.me/api/portraits/men/15.jpg",
       "https://randomuser.me/api/portraits/women/49.jpg",
+      "https://randomuser.me/api/portraits/men/20.jpg",
+      "https://randomuser.me/api/portraits/women/72.jpg",
     ],
-    membersCount: 31,
+    membersCount: 5, // Represented as '+5'
     active: true,
   },
   {
     id: "2",
-    name: "Digital Nomads",
+    name: "Digital Nomads Bangkok",
+    description: "Working remotely while exploring Bangkok? Join our community of digital nomads for co-workin...",
     members: [
-      "https://randomuser.me/api/portraits/men/20.jpg",
-      "https://randomuser.me/api/portraits/women/72.jpg",
-      "https://randomuser.me/api/portraits/men/38.jpg",
+      "https://randomuser.me/api/portraits/men/11.jpg",
+      "https://randomuser.me/api/portraits/women/44.jpg",
+      "https://randomuser.me/api/portraits/men/22.jpg",
+      "https://randomuser.me/api/portraits/women/1.jpg",
     ],
-    membersCount: 19,
-    active: false,
+    membersCount: 5, // Represented as '+5'
+    active: true,
   },
 ];
 
-const MOCK_FEED_POSTS = [
-  {
-    id: "1",
-    user: { name: "Sarah Jones", avatar: "https://randomuser.me/api/portraits/women/44.jpg" },
-    timestamp: "2 hours ago",
-    content: "Just arrived in Cervantes! Any recommendations for a good local surf spot? 🏄‍♀️",
-    likes: 12,
-    comments: 4,
-    hasLiked: true,
-  },
-  {
-    id: "2",
-    user: { name: "Alex Chen", avatar: "https://randomuser.me/api/portraits/men/11.jpg" },
-    timestamp: "5 hours ago",
-    content: "Found a hidden gem for photography near the main lighthouse. The sunset here is unreal! 📸",
-    likes: 21,
-    comments: 7,
-    hasLiked: false,
-  },
+// Map Data
+const MAP_REGION = {
+  latitude: 13.7563, // Bangkok coordinates
+  longitude: 100.5018,
+  latitudeDelta: 0.045,
+  longitudeDelta: 0.03,
+};
+const MAP_MARKERS = [
+  { id: "1", type: "backpacker", coordinate: { latitude: 13.765, longitude: 100.495 } },
+  { id: "2", type: "backpacker", coordinate: { latitude: 13.76, longitude: 100.51 } },
+  { id: "3", type: "event", coordinate: { latitude: 13.74, longitude: 100.48 } },
+  { id: "4", type: "event", coordinate: { latitude: 13.75, longitude: 100.52 } },
+];
+const MAP_LEGEND = [
+  { label: "Backpackers", color: "#428afc", count: 5 },
+  { label: "Events", color: "#22c55e", count: 4 },
+  { label: "You", color: "#ff5252" },
 ];
 
-// --- COMPONENTS WITH THE NEW DESIGN LANGUAGE ---
+// --- COMPONENTS ---
 
-// New, simplified Header
-const ExploreHeader = ({ user, onNotif, onProfile }) => {
+// App Header with Stats
+const AppHeader = ({ brand, user, stats, onNotif, onProfile }) => {
   return (
     <LinearGradient colors={["#6a93ec", "#53c7fa"]} style={headerStyles.headerBg}>
-      <View style={headerStyles.headerContainer}>
-        <TouchableOpacity onPress={onProfile} style={headerStyles.profileContainer}>
-          <Image source={{ uri: user.avatar }} style={headerStyles.avatar} />
-          <Text style={headerStyles.greetingText}>Hi, {user.name}</Text>
-        </TouchableOpacity>
+      <View style={headerStyles.topContainer}>
+        <Text style={headerStyles.brandText}>{brand}</Text>
+        <Text style={headerStyles.locationText}>{user.location}</Text>
         <TouchableOpacity onPress={onNotif} style={headerStyles.notifButton}>
           <Ionicons name="notifications-outline" size={26} color="#fff" />
-          {user.hasNotif && <View style={headerStyles.notifDot} />}
         </TouchableOpacity>
+      </View>
+      <View style={headerStyles.statsContainer}>
+        {stats.map((stat, index) => (
+          <View key={index} style={headerStyles.statItem}>
+            <Text style={headerStyles.statValue}>{stat.value}</Text>
+            <Text style={headerStyles.statLabel}>{stat.label}</Text>
+          </View>
+        ))}
       </View>
     </LinearGradient>
   );
 };
 
-// Redesigned Nearby Backpackers component
-const BackpackersSection = ({ data }) => {
+
+// Backpackers Section
+const NearbyBackpackersSection = ({ data }) => {
+  const Card = ({ item }) => (
+    <View style={cardStyles.backpackerCard}>
+      <Image source={{ uri: item.avatar }} style={cardStyles.backpackerAvatar} />
+      <Text style={cardStyles.backpackerName}>{item.name}</Text>
+      <Text style={cardStyles.backpackerDistance}>{item.distance}</Text>
+      <TouchableOpacity style={cardStyles.connectButton}>
+        <Text style={cardStyles.connectButtonText}>Connect</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <View style={sectionStyles.sectionContainer}>
       <View style={sectionStyles.sectionHeader}>
@@ -159,93 +176,98 @@ const BackpackersSection = ({ data }) => {
         </TouchableOpacity>
       </View>
       <FlatList
-        data={data}
+        data={[{ id: "you", name: "You", avatar: USER.avatar, distance: "0.5 km away" }, ...data]}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={sectionStyles.horizontalList}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity style={cardStyles.backpackerCard}>
-            <Image source={{ uri: item.avatar }} style={cardStyles.backpackerAvatar} />
-            <Text style={cardStyles.backpackerName}>{item.name}</Text>
-            <Text style={cardStyles.backpackerDistance}>{item.distance}</Text>
-          </TouchableOpacity>
-        )}
+        renderItem={({ item }) => <Card item={item} />}
       />
     </View>
   );
 };
 
-// Redesigned Events component
-const EventsSection = ({ data }) => {
-  return (
-    <View style={sectionStyles.sectionContainer}>
-      <View style={sectionStyles.sectionHeader}>
-        <Text style={sectionStyles.sectionTitle}>Local Events</Text>
-        <TouchableOpacity>
-          <Text style={sectionStyles.seeAllBtn}>See All</Text>
+
+// Local Events Section
+const LocalEventsSection = ({ data }) => {
+  const Card = ({ item }) => (
+    <View style={cardStyles.eventCard}>
+      <Text style={cardStyles.eventTitle}>{item.title}</Text>
+      <View style={cardStyles.eventMeta}>
+        <Feather name="clock" size={14} color="#666" />
+        <Text style={cardStyles.eventTime}>{item.date} • {item.time}</Text>
+      </View>
+      <View style={cardStyles.eventInfo}>
+        <View style={cardStyles.goingContainer}>
+          <Feather name="users" size={14} color="#666" />
+          <Text style={cardStyles.goingText}>{item.going} going</Text>
+        </View>
+        <View style={cardStyles.distanceContainer}>
+          <Feather name="map-pin" size={14} color="#666" />
+          <Text style={cardStyles.distanceText}>{item.distance}</Text>
+        </View>
+        <TouchableOpacity style={cardStyles.joinButton}>
+          <Text style={cardStyles.joinButtonText}>Join</Text>
         </TouchableOpacity>
       </View>
+    </View>
+  );
+
+  return (
+    <View style={sectionStyles.sectionContainer}>
+      <Text style={sectionStyles.sectionTitleEvents}>Local Events</Text>
       <FlatList
         data={data}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={sectionStyles.horizontalList}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={sectionStyles.verticalList}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity style={cardStyles.eventCard}>
-            <Text style={cardStyles.eventTitle}>{item.title}</Text>
-            <Text style={cardStyles.eventDate}>{item.date}</Text>
-            <View style={cardStyles.eventMeta}>
-              <Ionicons name="location-outline" size={14} color="#666" />
-              <Text style={cardStyles.eventLocation}>{item.location}</Text>
-            </View>
-            <View style={cardStyles.joinInfo}>
-              <Text style={cardStyles.joinText}>{item.going} people going</Text>
-              <TouchableOpacity style={cardStyles.joinButton}>
-                <Text style={cardStyles.joinButtonText}>{item.isJoined ? "Joined" : "Join"}</Text>
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
-        )}
+        renderItem={({ item }) => <Card item={item} />}
       />
     </View>
   );
 };
 
-// Redesigned Feed component
-const FeedSection = ({ data }) => {
-  const FeedPost = ({ post }) => {
-    return (
-      <View style={cardStyles.postCard}>
-        <View style={cardStyles.postHeader}>
-          <Image source={{ uri: post.user.avatar }} style={cardStyles.postAvatar} />
-          <View>
-            <Text style={cardStyles.postUserName}>{post.user.name}</Text>
-            <Text style={cardStyles.postTimestamp}>{post.timestamp}</Text>
+
+// Active Groups Section
+const ActiveGroupsSection = ({ data }) => {
+  const Card = ({ item }) => (
+    <View style={cardStyles.groupCard}>
+      <View>
+        <View style={cardStyles.groupHeader}>
+          <Text style={cardStyles.groupTitle}>{item.name}</Text>
+          {item.active && <Text style={cardStyles.groupActiveTag}>Active</Text>}
+        </View>
+        <Text style={cardStyles.groupDescription}>{item.description}</Text>
+      </View>
+      <View style={cardStyles.groupFooter}>
+        <View style={cardStyles.memberAvatars}>
+          {item.members.map((avatar, index) => (
+            <Image
+              key={index}
+              source={{ uri: avatar }}
+              style={[
+                cardStyles.memberAvatar,
+                { zIndex: data.length - index, marginLeft: index === 0 ? 0 : -8 },
+              ]}
+            />
+          ))}
+          <View style={cardStyles.memberCount}>
+            <Text style={cardStyles.memberCountText}>+{item.membersCount}</Text>
           </View>
         </View>
-        <Text style={cardStyles.postContent}>{post.content}</Text>
-        <View style={cardStyles.postActions}>
-          <TouchableOpacity style={cardStyles.actionButton}>
-            <Ionicons name={post.hasLiked ? "heart" : "heart-outline"} size={22} color={post.hasLiked ? "#ff4081" : "#666"} />
-            <Text style={cardStyles.actionText}>{post.likes}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={cardStyles.actionButton}>
-            <Ionicons name="chatbubble-outline" size={22} color="#666" />
-            <Text style={cardStyles.actionText}>{post.comments}</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={cardStyles.joinGroupButton}>
+          <Text style={cardStyles.joinGroupButtonText}>Join Group</Text>
+        </TouchableOpacity>
       </View>
-    );
-  };
+    </View>
+  );
 
   return (
     <View style={sectionStyles.sectionContainer}>
       <View style={sectionStyles.sectionHeader}>
-        <Text style={sectionStyles.sectionTitle}>Local Feed</Text>
+        <Text style={sectionStyles.sectionTitle}>Active Groups</Text>
         <TouchableOpacity>
-          <Text style={sectionStyles.seeAllBtn}>New Post</Text>
+          <Text style={sectionStyles.seeAllBtn}>View All</Text>
         </TouchableOpacity>
       </View>
       <FlatList
@@ -253,60 +275,59 @@ const FeedSection = ({ data }) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={sectionStyles.verticalList}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <FeedPost post={item} />}
+        renderItem={({ item }) => <Card item={item} />}
       />
     </View>
   );
 };
 
-// Redesigned Mini Map section
-const MiniMapSection = ({ onMapPress }) => {
+
+// Nearby Activity Map Section
+const NearbyActivitySection = ({ onMapPress }) => {
   const markerColor = {
     you: "#ff5252",
     backpacker: "#428afc",
     event: "#22c55e",
   };
-  const MINI_MAP_LAT = -30.5;
-  const MINI_MAP_LNG = 115.1;
-  const markers = [
-    { id: "you", type: "you", lat: MINI_MAP_LAT, lng: MINI_MAP_LNG, label: "You" },
-    { id: "backpacker1", type: "backpacker", lat: MINI_MAP_LAT + 0.012, lng: MINI_MAP_LNG + 0.01, label: "Alex" },
-    { id: "event1", type: "event", lat: MINI_MAP_LAT + 0.01, lng: MINI_MAP_LNG - 0.014, label: "BBQ Night" },
-  ];
 
   return (
     <View style={sectionStyles.sectionContainer}>
-      <View style={sectionStyles.sectionHeader}>
-        <Text style={sectionStyles.sectionTitle}>Nearby on Map</Text>
-        <TouchableOpacity onPress={onMapPress}>
-          <Text style={sectionStyles.seeAllBtn}>View Full Map</Text>
-        </TouchableOpacity>
-      </View>
+      <Text style={sectionStyles.sectionTitle}>Nearby Activity</Text>
       <View style={cardStyles.mapCard}>
         <MapView
           provider={PROVIDER_GOOGLE}
           style={cardStyles.mapStyle}
-          region={{
-            latitude: MINI_MAP_LAT,
-            longitude: MINI_MAP_LNG,
-            latitudeDelta: 0.045,
-            longitudeDelta: 0.03,
-          }}
+          region={MAP_REGION}
           scrollEnabled={false}
           zoomEnabled={false}
         >
-          {markers.map((m) => (
+          {MAP_MARKERS.map((m) => (
             <Marker
               key={m.id}
-              coordinate={{ latitude: m.lat, longitude: m.lng }}
+              coordinate={m.coordinate}
               pinColor={markerColor[m.type]}
             />
           ))}
+          {/* Add a marker for 'You' */}
+          <Marker coordinate={{ latitude: MAP_REGION.latitude, longitude: MAP_REGION.longitude }} pinColor={markerColor.you} />
         </MapView>
+        <TouchableOpacity onPress={onMapPress} style={cardStyles.viewFullMapButton}>
+          <Feather name="external-link" size={16} color="#428afc" />
+          <Text style={cardStyles.viewFullMapText}>View Full Map</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={cardStyles.mapLegend}>
+        {MAP_LEGEND.map((item, index) => (
+          <View key={index} style={cardStyles.legendItem}>
+            <View style={[cardStyles.legendDot, { backgroundColor: item.color }]} />
+            <Text style={cardStyles.legendText}>{item.label} ({item.count || 1})</Text>
+          </View>
+        ))}
       </View>
     </View>
   );
 };
+
 
 // The main screen component
 export function ExploreScreen() {
@@ -316,12 +337,20 @@ export function ExploreScreen() {
 
   return (
     <View style={styles.container}>
-      <ExploreHeader user={USER} onNotif={handleNotifPress} onProfile={handleProfilePress} />
+      {/* App Header is commented out to match the photo with the simple header and no stats */}
+      {/* <AppHeader brand={APP_BRAND} user={USER} stats={STATS} onNotif={handleNotifPress} onProfile={handleProfilePress} /> */}
+      
+      {/* The `Active Groups` component is first in one of the photos */}
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <BackpackersSection data={MOCK_BACKPACKERS} />
-        <EventsSection data={MOCK_EVENTS} />
-        <FeedSection data={MOCK_FEED_POSTS} />
-        <MiniMapSection onMapPress={handleMapPress} />
+        <ActiveGroupsSection data={MOCK_GROUPS} />
+        <NearbyActivitySection onMapPress={handleMapPress} />
+        <LocalEventsSection data={MOCK_EVENTS} />
+        
+        {/*
+          Backpackers Section is present in the other photo. I will include it here for completeness
+          but will place the groups and map sections first to match the primary image provided.
+        */}
+        {/* <NearbyBackpackersSection data={MOCK_BACKPACKERS} /> */}
       </ScrollView>
     </View>
   );
@@ -333,51 +362,52 @@ const headerStyles = StyleSheet.create({
     paddingTop: Platform.OS === "android" ? 50 : 60,
     paddingBottom: 20,
     paddingHorizontal: 20,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-    marginBottom: -10, // Pulls content up into the header
+    marginBottom: 0,
+    paddingBottom: 20,
   },
-  headerContainer: {
+  topContainer: {
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
-    alignItems: "center",
   },
-  profileContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    borderWidth: 2,
-    borderColor: '#fff',
-  },
-  greetingText: {
-    fontSize: 20,
+  brandText: {
+    fontSize: 24,
     fontWeight: "bold",
     color: "#fff",
-    marginLeft: 10,
+  },
+  locationText: {
+    flex: 1,
+    fontSize: 16,
+    color: "#fff",
+    textAlign: 'center',
   },
   notifButton: {
     padding: 8,
   },
-  notifDot: {
-    position: "absolute",
-    top: 5,
-    right: 5,
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: "#ff5252",
-    borderWidth: 1.5,
-    borderColor: "#fff",
+  statsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 20,
+  },
+  statItem: {
+    alignItems: "center",
+  },
+  statValue: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+  statLabel: {
+    fontSize: 14,
+    color: "#fff",
+    opacity: 0.8,
   },
 });
 
 const sectionStyles = StyleSheet.create({
   sectionContainer: {
-    marginBottom: 25,
+    marginBottom: 20,
+    paddingTop: 10,
   },
   sectionHeader: {
     flexDirection: "row",
@@ -387,9 +417,16 @@ const sectionStyles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   sectionTitle: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: "bold",
     color: "#1a202c",
+  },
+  sectionTitleEvents: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#1a202c",
+    paddingHorizontal: 20,
+    marginBottom: 15,
   },
   seeAllBtn: {
     color: "#428afc",
@@ -406,7 +443,7 @@ const sectionStyles = StyleSheet.create({
 });
 
 const cardStyles = StyleSheet.create({
-  // Backpacker Card
+  // Backpackers Card
   backpackerCard: {
     backgroundColor: "#fff",
     padding: 15,
@@ -435,13 +472,24 @@ const cardStyles = StyleSheet.create({
     color: "#a0aec0",
     marginTop: 2,
   },
+  connectButton: {
+    backgroundColor: "#428afc",
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    marginTop: 10,
+  },
+  connectButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 12,
+  },
 
   // Event Card
   eventCard: {
     backgroundColor: "#fff",
-    padding: 20,
+    padding: 15,
     borderRadius: 15,
-    width: 250,
     shadowColor: "#000",
     shadowOpacity: 0.05,
     shadowRadius: 10,
@@ -449,96 +497,140 @@ const cardStyles = StyleSheet.create({
     elevation: 3,
   },
   eventTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
     color: "#1a202c",
     marginBottom: 5,
   },
-  eventDate: {
-    fontSize: 14,
-    color: "#666",
-  },
   eventMeta: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 10,
   },
-  eventLocation: {
-    fontSize: 13,
+  eventTime: {
+    fontSize: 12,
     color: "#666",
     marginLeft: 5,
   },
-  joinInfo: {
+  eventInfo: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 15,
+    justifyContent: 'space-between',
+    marginTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+    paddingTop: 10,
   },
-  joinText: {
-    fontSize: 13,
-    color: "#428afc",
-    fontWeight: "600",
+  goingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  goingText: {
+    fontSize: 12,
+    color: "#666",
+    marginLeft: 5,
+  },
+  distanceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  distanceText: {
+    fontSize: 12,
+    color: "#666",
+    marginLeft: 5,
   },
   joinButton: {
     backgroundColor: "#428afc",
     paddingHorizontal: 15,
     paddingVertical: 8,
-    borderRadius: 10,
+    borderRadius: 8,
   },
   joinButtonText: {
     color: "#fff",
     fontWeight: "bold",
+    fontSize: 12,
   },
 
-  // Feed Post Card
-  postCard: {
+  // Group Card
+  groupCard: {
     backgroundColor: "#fff",
     padding: 20,
     borderRadius: 15,
     marginBottom: 10,
+    marginHorizontal: 20,
     shadowColor: "#000",
     shadowOpacity: 0.05,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 5 },
     elevation: 3,
+    gap: 15,
   },
-  postHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 15,
+  groupHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  postAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  groupTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#1a202c",
     marginRight: 10,
   },
-  postUserName: {
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  postTimestamp: {
+  groupActiveTag: {
+    backgroundColor: '#dcfce7',
+    color: '#16a34a',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 15,
     fontSize: 12,
-    color: "#a0aec0",
+    fontWeight: 'bold',
   },
-  postContent: {
-    fontSize: 16,
-    color: "#1a202c",
-    marginBottom: 15,
-  },
-  postActions: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 20,
-  },
-  actionButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-  },
-  actionText: {
+  groupDescription: {
     fontSize: 14,
     color: "#666",
+    marginTop: 5,
+  },
+  groupFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  memberAvatars: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  memberAvatar: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    borderWidth: 2,
+    borderColor: '#fff',
+  },
+  memberCount: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#e2e8f0',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: -8,
+    borderWidth: 2,
+    borderColor: '#fff',
+  },
+  memberCountText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#666',
+  },
+  joinGroupButton: {
+    backgroundColor: "#428afc",
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  joinGroupButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 12,
   },
 
   // Map Card
@@ -546,7 +638,7 @@ const cardStyles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 15,
     overflow: "hidden",
-    height: 200,
+    height: 250,
     marginHorizontal: 20,
     shadowColor: "#000",
     shadowOpacity: 0.05,
@@ -556,6 +648,48 @@ const cardStyles = StyleSheet.create({
   },
   mapStyle: {
     ...StyleSheet.absoluteFillObject,
+  },
+  viewFullMapButton: {
+    position: 'absolute',
+    bottom: 20,
+    left: '50%',
+    transform: [{ translateX: -70 }],
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 25,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
+    gap: 5,
+  },
+  viewFullMapText: {
+    color: '#428afc',
+    fontWeight: 'bold',
+  },
+  mapLegend: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 10,
+    gap: 20,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  legendDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginRight: 5,
+  },
+  legendText: {
+    fontSize: 12,
+    color: '#666',
   },
 });
 
@@ -568,4 +702,3 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
 });
-
