@@ -28,7 +28,7 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      {isAuthenticated ? <AppStack /> : <AuthStack />}
+      <AuthStack />
     </NavigationContainer>
   );
 }
